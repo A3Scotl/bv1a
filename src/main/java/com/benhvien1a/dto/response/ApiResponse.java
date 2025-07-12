@@ -1,4 +1,4 @@
-package com.benhvien1a.dto;
+package com.benhvien1a.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,8 @@
+
 /*
- * @ (#) SecurityConfig.java 1.0 7/11/2025
- *
- * Copyright (c) 2025 IUH. All rights reserved
+         * @ (#) SecurityConfig.java 1.0 7/12/2025
+         *
+         * Copyright (c) 2025 IUH. All rights reserved
  */
 package com.benhvien1a.config;
 
@@ -28,7 +29,7 @@ import java.util.Arrays;
 /*
  * @description: Security configuration for JWT-based authentication and CORS
  * @author: Nguyen Truong An
- * @date: 7/11/2025
+ * @date: 7/12/2025
  * @version: 1.0
  */
 @Configuration
@@ -46,22 +47,24 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // PUBLIC: Không cần login
-                        .requestMatchers("/api/auth/login","/api/auth/forgot-password").permitAll()
-
-                        // EDITOR: Cho phép login, reset-password, đổi mật khẩu...
+                        // PUBLIC: Các endpoint không cần đăng nhập
+                        .requestMatchers("/api/auth/login", "/api/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // Tất cả GET công khai
+                        .requestMatchers(HttpMethod.POST, "/api/appointments").permitAll() // POST đăng ký lịch khám công khai
+                        // EDITOR: Quyền truy cập các endpoint liên quan
+                        .requestMatchers("/api/articles/**", "/api/departments/**", "/api/doctors/**",
+                                "/api/services/**", "/api/menus/**", "/api/service-prices/**",
+                                "/api/categories/**")
+                        .hasAnyRole("EDITOR", "ADMIN")
+                        // AUTH: Giữ nguyên quyền cho các endpoint xác thực
                         .requestMatchers(
-
                                 "/api/auth/resend-verification",
                                 "/api/auth/reset-password",
                                 "/api/auth/change-password"
-                        ).hasAnyRole("EDITOR", "ADMIN") // Cả Editor và Admin đều login được
-
-                        // ADMIN: Chỉ admin được phép toàn quyền
-
-                        .requestMatchers("/api/admin/**", "/api/**","/api/auth/register").hasRole("ADMIN")
-
-                        // Còn lại phải login
+                        ).hasAnyRole("EDITOR", "ADMIN")
+                        // ADMIN: Toàn quyền cho các endpoint còn lại
+                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        // Còn lại phải đăng nhập
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

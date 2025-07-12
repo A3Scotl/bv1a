@@ -8,5 +8,5 @@ public interface AuthService {
     AuthResponse forgotPassword(ForgotPasswordRequest request);
     AuthResponse resendVerificationCode(ForgotPasswordRequest request);
     AuthResponse resetPassword(ResetPasswordRequest request);
-    AuthResponse changePassword(ChangePasswordRequest request); // Admin-only
+    AuthResponse changePassword(ChangePasswordRequest request);
 }

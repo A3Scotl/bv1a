@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>movies.be</groupId>
-    <artifactId>AaaMovies_BE</artifactId>
+    <artifactId>bv1a</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>AaaMovies_BE</name>
-    <description>Spring Boot backend for AaaMovies streaming application</description>
+    <name>bv1a</name>
+    <description>Spring Boot backend for bv1a</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
