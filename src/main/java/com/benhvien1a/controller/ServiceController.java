@@ -19,7 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/services")
+@RequestMapping("/api/v1/services")
 @RequiredArgsConstructor
 public class ServiceController {
     private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
@@ -38,7 +38,7 @@ public class ServiceController {
                     service,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services"
+                    "/api/v1/services"
             ));
         } catch (Exception e) {
             logger.error("Tạo dịch vụ thất bại: {}", e.getMessage());
@@ -48,7 +48,7 @@ public class ServiceController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services"
+                    "/api/v1/services"
             ));
         }
     }
@@ -65,7 +65,7 @@ public class ServiceController {
                     service,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id
+                    "/api/v1/services/" + id
             ));
         } catch (Exception e) {
             logger.error("Cập nhật dịch vụ thất bại: {}", e.getMessage());
@@ -75,7 +75,7 @@ public class ServiceController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id
+                    "/api/v1/services/" + id
             ));
         }
     }
@@ -92,7 +92,7 @@ public class ServiceController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id
+                    "/api/v1/services/" + id
             ));
         } catch (Exception e) {
             logger.error("Xóa dịch vụ thất bại: {}", e.getMessage());
@@ -102,7 +102,7 @@ public class ServiceController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id
+                    "/api/v1/services/" + id
             ));
         }
     }
@@ -119,7 +119,7 @@ public class ServiceController {
                     service,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + slug
+                    "/api/v1/services/" + slug
             ));
         } catch (Exception e) {
             logger.error("Lấy dịch vụ thất bại: {}", e.getMessage());
@@ -129,7 +129,7 @@ public class ServiceController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + slug
+                    "/api/v1/services/" + slug
             ));
         }
     }
@@ -146,7 +146,7 @@ public class ServiceController {
                     service,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id
+                    "/api/v1/services/" + id
             ));
         } catch (Exception e) {
             logger.error("Lấy dịch vụ thất bại: {}", e.getMessage());
@@ -156,7 +156,7 @@ public class ServiceController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id
+                    "/api/v1/services/" + id
             ));
         }
     }
@@ -173,7 +173,7 @@ public class ServiceController {
                     services,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services"
+                    "/api/v1/services"
             ));
         } catch (Exception e) {
             logger.error("Lấy tất cả dịch vụ thất bại: {}", e.getMessage());
@@ -183,7 +183,7 @@ public class ServiceController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services"
+                    "/api/v1/services"
             ));
         }
     }
@@ -200,7 +200,7 @@ public class ServiceController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id + "/hide"
+                    "/api/v1/services/" + id + "/hide"
             ));
         } catch (Exception e) {
             logger.error("Ẩn dịch vụ thất bại: {}", e.getMessage());
@@ -210,7 +210,7 @@ public class ServiceController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/services/" + id + "/hide"
+                    "/api/v1/services/" + id + "/hide"
             ));
         }
     }

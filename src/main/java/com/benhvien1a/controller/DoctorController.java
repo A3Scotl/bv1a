@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/doctors")
+@RequestMapping("/api/v1/doctors")
 @RequiredArgsConstructor
 public class DoctorController {
     private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
@@ -37,7 +37,7 @@ public class DoctorController {
                     doctor,
                     null,
                     null,
-                    "/api/doctors"
+                    "/api/v1/doctors"
             ));
         } catch (Exception e) {
             logger.error("Tạo bác sĩ thất bại: {}", e.getMessage());
@@ -47,7 +47,7 @@ public class DoctorController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/doctors"
+                    "/api/v1/doctors"
             ));
         }
     }
@@ -66,7 +66,7 @@ public class DoctorController {
                     doctor,
                     null,
                     null,
-                    "/api/doctors/" + id
+                    "/api/v1/doctors/" + id
             ));
         } catch (Exception e) {
             logger.error("Cập nhật bác sĩ thất bại: {}", e.getMessage());
@@ -76,7 +76,7 @@ public class DoctorController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/doctors/" + id
+                    "/api/v1/doctors/" + id
             ));
         }
     }
@@ -93,7 +93,7 @@ public class DoctorController {
                     null,
                     null,
                     null,
-                    "/api/doctors/" + id
+                    "/api/v1/doctors/" + id
             ));
         } catch (Exception e) {
             logger.error("Xóa bác sĩ thất bại: {}", e.getMessage());
@@ -103,7 +103,7 @@ public class DoctorController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/doctors/" + id
+                    "/api/v1/doctors/" + id
             ));
         }
     }
@@ -120,7 +120,7 @@ public class DoctorController {
                     doctor,
                     null,
                     null,
-                    "/api/doctors/" + id
+                    "/api/v1/doctors/" + id
             ));
         } catch (Exception e) {
             logger.error("Lấy bác sĩ thất bại: {}", e.getMessage());
@@ -130,7 +130,7 @@ public class DoctorController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/doctors/" + id
+                    "/api/v1/doctors/" + id
             ));
         }
     }
@@ -147,7 +147,7 @@ public class DoctorController {
                     doctor,
                     null,
                     null,
-                    "/api/doctors/by-slug/" + slug
+                    "/api/v1/doctors/by-slug/" + slug
             ));
         } catch (Exception e) {
             logger.error("Lấy bác sĩ thất bại: {}", e.getMessage());
@@ -157,7 +157,7 @@ public class DoctorController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/doctors/by-slug/" + slug
+                    "/api/v1/doctors/by-slug/" + slug
             ));
         }
     }
@@ -174,7 +174,7 @@ public class DoctorController {
                     doctors,
                     null,
                     null,
-                    "/api/doctors"
+                    "/api/v1/doctors"
             ));
         } catch (Exception e) {
             logger.error("Lấy tất cả bác sĩ thất bại: {}", e.getMessage());
@@ -184,7 +184,7 @@ public class DoctorController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/doctors"
+                    "/api/v1/doctors"
             ));
         }
     }
@@ -201,7 +201,7 @@ public class DoctorController {
                     null,
                     null,
                     null,
-                    "/api/doctors/" + id + "/hide"
+                    "/api/v1/doctors/" + id + "/hide"
             ));
         } catch (Exception e) {
             logger.error("Ẩn bác sĩ thất bại: {}", e.getMessage());
@@ -211,7 +211,7 @@ public class DoctorController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/doctors/" + id + "/hide"
+                    "/api/v1/doctors/" + id + "/hide"
             ));
         }
     }

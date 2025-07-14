@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/appointments")
+@RequestMapping("/api/v1/appointments")
 @RequiredArgsConstructor
 public class AppointmentController {
     private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
@@ -34,7 +34,7 @@ public class AppointmentController {
                     createdAppointment,
                     null,
                     null,
-                    "/api/appointments"
+                    "/api/v1/appointments"
             ));
         } catch (Exception e) {
             logger.error("Failed to create appointment: {}", e.getMessage());
@@ -44,7 +44,7 @@ public class AppointmentController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/appointments"
+                    "/api/v1/appointments"
             ));
         }
     }
@@ -61,7 +61,7 @@ public class AppointmentController {
                     updatedAppointment,
                     null,
                     null,
-                    "/api/appointments/" + id
+                    "/api/v1/appointments/" + id
             ));
         } catch (Exception e) {
             logger.error("Failed to update appointment: {}", e.getMessage());
@@ -71,7 +71,7 @@ public class AppointmentController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/appointments/" + id
+                    "/api/v1/appointments/" + id
             ));
         }
     }
@@ -88,7 +88,7 @@ public class AppointmentController {
                     null,
                     null,
                     null,
-                    "/api/appointments/" + id
+                    "/api/v1/appointments/" + id
             ));
         } catch (Exception e) {
             logger.error("Failed to delete appointment: {}", e.getMessage());
@@ -98,7 +98,7 @@ public class AppointmentController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/appointments/" + id
+                    "/api/v1/appointments/" + id
             ));
         }
     }
@@ -115,7 +115,7 @@ public class AppointmentController {
                     appointment,
                     null,
                     null,
-                    "/api/appointments/" + id
+                    "/api/v1/appointments/" + id
             ));
         } catch (Exception e) {
             logger.error("Failed to retrieve appointment: {}", e.getMessage());
@@ -125,7 +125,7 @@ public class AppointmentController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/appointments/" + id
+                    "/api/v1/appointments/" + id
             ));
         }
     }
@@ -142,7 +142,7 @@ public class AppointmentController {
                     appointment,
                     null,
                     null,
-                    "/api/appointments/by-slug/" + slug
+                    "/api/v1/appointments/by-slug/" + slug
             ));
         } catch (Exception e) {
             logger.error("Failed to retrieve appointment by slug: {}", e.getMessage());
@@ -152,7 +152,7 @@ public class AppointmentController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/appointments/by-slug/" + slug
+                    "/api/v1/appointments/by-slug/" + slug
             ));
         }
     }
@@ -169,7 +169,7 @@ public class AppointmentController {
                     appointments,
                     null,
                     null,
-                    "/api/appointments"
+                    "/api/v1/appointments"
             ));
         } catch (Exception e) {
             logger.error("Failed to retrieve all appointments: {}", e.getMessage());
@@ -179,7 +179,7 @@ public class AppointmentController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/appointments"
+                    "/api/v1/appointments"
             ));
         }
     }
@@ -196,7 +196,7 @@ public class AppointmentController {
                     null,
                     null,
                     null,
-                    "/api/appointments/" + id + "/hide"
+                    "/api/v1/appointments/" + id + "/hide"
             ));
         } catch (Exception e) {
             logger.error("Failed to hide appointment: {}", e.getMessage());
@@ -206,7 +206,7 @@ public class AppointmentController {
                     null,
                     e.getMessage(),
                     null,
-                    "/api/appointments/" + id + "/hide"
+                    "/api/v1/appointments/" + id + "/hide"
             ));
         }
     }

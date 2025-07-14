@@ -24,7 +24,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -44,7 +44,7 @@ public class AuthController {
                     response,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/register"
+                    "/api/v1/auth/register"
             ));
         } catch (AuthException e) {
             logger.error("Tạo tài khoản thất bại cho {}: {}", request.getEmail(), e.getMessage());
@@ -54,7 +54,7 @@ public class AuthController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/register"
+                    "/api/v1/auth/register"
             ));
         }
     }
@@ -70,7 +70,7 @@ public class AuthController {
                     response,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/login"
+                    "/api/v1/auth/login"
             ));
         } catch (AuthException e) {
             logger.error("Đăng nhập thất bại cho {}: {}", request.getEmail(), e.getMessage());
@@ -80,7 +80,7 @@ public class AuthController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/login"
+                    "/api/v1/auth/login"
             ));
         }
     }
@@ -96,7 +96,7 @@ public class AuthController {
                     response,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/forgot-password"
+                    "/api/v1/auth/forgot-password"
             ));
         } catch (AuthException e) {
             logger.error("Xử lý đặt lại mật khẩu thất bại cho {}: {}", request.getEmail(), e.getMessage());
@@ -106,7 +106,7 @@ public class AuthController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/forgot-password"
+                    "/api/v1/auth/forgot-password"
             ));
         }
     }
@@ -122,7 +122,7 @@ public class AuthController {
                     response,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/resend-verification"
+                    "/api/v1/auth/resend-verification"
             ));
         } catch (AuthException e) {
             logger.error("Gửi lại mã xác thực thất bại cho {}: {}", request.getEmail(), e.getMessage());
@@ -132,7 +132,7 @@ public class AuthController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/resend-verification"
+                    "/api/v1/auth/resend-verification"
             ));
         }
     }
@@ -146,7 +146,7 @@ public class AuthController {
                 null,
                 null,
                 ZonedDateTime.now(ZoneId.of("UTC")),
-                "/api/auth/reset-password"
+                "/api/v1/auth/reset-password"
         ));
     }
 
@@ -161,7 +161,7 @@ public class AuthController {
                     response,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/reset-password"
+                    "/api/v1/auth/reset-password"
             ));
         } catch (AuthException e) {
             logger.error("Đặt lại mật khẩu thất bại cho {}: {}", request.getEmail(), e.getMessage());
@@ -171,7 +171,7 @@ public class AuthController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/reset-password"
+                    "/api/v1/auth/reset-password"
             ));
         }
     }
@@ -188,7 +188,7 @@ public class AuthController {
                     response,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/change-password"
+                    "/api/v1/auth/change-password"
             ));
         } catch (AuthException e) {
             logger.error("Thay đổi mật khẩu thất bại cho {}: {}", request.getEmail(), e.getMessage());
@@ -198,7 +198,7 @@ public class AuthController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/auth/change-password"
+                    "/api/v1/auth/change-password"
             ));
         }
     }
@@ -220,7 +220,7 @@ public class AuthController {
                 null,
                 null,
                 ZonedDateTime.now(ZoneId.of("UTC")),
-                "/api/auth/logout"
+                "/api/v1/auth/logout"
         ));
     }
 }

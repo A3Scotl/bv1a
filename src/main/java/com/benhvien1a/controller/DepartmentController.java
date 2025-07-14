@@ -31,7 +31,7 @@ import java.util.List;
  * @version: 1.0
  */
 @RestController
-@RequestMapping("/api/departments")
+@RequestMapping("/api/v1/departments")
 @RequiredArgsConstructor
 public class DepartmentController {
     private static final Logger logger = LoggerFactory.getLogger(DepartmentController.class);
@@ -50,7 +50,7 @@ public class DepartmentController {
                     department,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments"
+                    "/api/v1/departments"
             ));
         } catch (Exception e) {
             logger.error("Tạo phòng ban thất bại: {}", e.getMessage());
@@ -60,7 +60,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments"
+                    "/api/v1/departments"
             ));
         }
     }
@@ -77,7 +77,7 @@ public class DepartmentController {
                     department,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id
+                    "/api/v1/departments/" + id
             ));
         } catch (Exception e) {
             logger.error("Cập nhật phòng ban thất bại ID {}: {}", id, e.getMessage());
@@ -87,7 +87,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id
+                    "/api/v1/departments/" + id
             ));
         }
     }
@@ -104,7 +104,7 @@ public class DepartmentController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id
+                    "/api/v1/departments/" + id
             ));
         } catch (Exception e) {
             logger.error("Xóa phòng ban thất bại ID {}: {}", id, e.getMessage());
@@ -114,7 +114,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id
+                    "/api/v1/departments/" + id
             ));
         }
     }
@@ -131,7 +131,7 @@ public class DepartmentController {
                     department,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id
+                    "/api/v1/departments/" + id
             ));
         } catch (Exception e) {
             logger.error("Lấy phòng ban thất bại ID {}: {}", id, e.getMessage());
@@ -141,7 +141,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id
+                    "/api/v1/departments/" + id
             ));
         }
     }
@@ -158,7 +158,7 @@ public class DepartmentController {
                     department,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/by-slug/" + slug
+                    "/api/v1/departments/by-slug/" + slug
             ));
         } catch (Exception e) {
             logger.error("Lấy phòng ban thất bại với slug {}: {}", slug, e.getMessage());
@@ -168,7 +168,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/by-slug/" + slug
+                    "/api/v1/departments/by-slug/" + slug
             ));
         }
     }
@@ -185,7 +185,7 @@ public class DepartmentController {
                     departments,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments"
+                    "/api/v1/departments"
             ));
         } catch (Exception e) {
             logger.error("Lấy danh sách phòng ban thất bại: {}", e.getMessage());
@@ -195,7 +195,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments"
+                    "/api/v1/departments"
             ));
         }
     }
@@ -212,7 +212,7 @@ public class DepartmentController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id + "/hide"
+                    "/api/v1/departments/" + id + "/hide"
             ));
         } catch (Exception e) {
             logger.error("Ẩn phòng ban thất bại ID {}: {}", id, e.getMessage());
@@ -222,7 +222,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/" + id + "/hide"
+                    "/api/v1/departments/" + id + "/hide"
             ));
         }
     }
@@ -241,7 +241,7 @@ public class DepartmentController {
                     departments,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/public"
+                    "/api/v1/departments/public"
             ));
         } catch (Exception e) {
             logger.error("Lấy danh sách phòng ban đang hoạt động thất bại: {}", e.getMessage());
@@ -251,7 +251,7 @@ public class DepartmentController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/departments/public"
+                    "/api/v1/departments/public"
             ));
         }
     }

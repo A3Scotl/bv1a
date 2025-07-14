@@ -48,22 +48,22 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // PUBLIC: Các endpoint không cần đăng nhập
-                        .requestMatchers("/api/auth/login", "/api/auth/forgot-password").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll() // Tất cả GET công khai
-                        .requestMatchers(HttpMethod.POST, "/api/appointments").permitAll() // POST đăng ký lịch khám công khai
+                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll() // Tất cả GET công khai
+                        .requestMatchers(HttpMethod.POST, "/api/v1/appointments").permitAll() // POST đăng ký lịch khám công khai
                         // EDITOR: Quyền truy cập các endpoint liên quan
-                        .requestMatchers("/api/articles/**", "/api/departments/**", "/api/doctors/**",
-                                "/api/services/**", "/api/menus/**", "/api/service-prices/**",
-                                "/api/categories/**")
+                        .requestMatchers("/api/v1/articles/**", "/api/v1/departments/**", "/api/v1/doctors/**",
+                                "/api/v1/services/**", "/api/v1/menus/**", "/api/v1/service-prices/**",
+                                "/api/v1/categories/**")
                         .hasAnyRole("EDITOR", "ADMIN")
                         // AUTH: Giữ nguyên quyền cho các endpoint xác thực
                         .requestMatchers(
-                                "/api/auth/resend-verification",
-                                "/api/auth/reset-password",
-                                "/api/auth/change-password"
+                                "/api/v1/auth/resend-verification",
+                                "/api/v1/auth/reset-password",
+                                "/api/v1/auth/change-password"
                         ).hasAnyRole("EDITOR", "ADMIN")
                         // ADMIN: Toàn quyền cho các endpoint còn lại
-                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/**").hasRole("ADMIN")
                         // Còn lại phải đăng nhập
                         .anyRequest().authenticated()
                 )

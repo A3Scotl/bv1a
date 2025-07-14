@@ -31,7 +31,7 @@ import java.util.List;
  * @version: 1.0
  */
 @RestController
-@RequestMapping("/api/articles")
+@RequestMapping("/api/v1/articles")
 @RequiredArgsConstructor
 public class ArticleController {
     private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
@@ -50,7 +50,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         } catch (Exception e) {
             logger.error("Tạo bài viết thất bại: {}", e.getMessage());
@@ -60,7 +60,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         }
     }
@@ -77,7 +77,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         } catch (Exception e) {
             logger.error("Cập nhật bài viết thất bại ID {}: {}", id, e.getMessage());
@@ -87,7 +87,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         }
     }
@@ -104,7 +104,7 @@ public class ArticleController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         } catch (Exception e) {
             logger.error("Xóa bài viết thất bại ID {}: {}", id, e.getMessage());
@@ -114,7 +114,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         }
     }
@@ -131,7 +131,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         } catch (Exception e) {
             logger.error("Lấy bài viết thất bại ID {}: {}", id, e.getMessage());
@@ -141,7 +141,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         }
     }
@@ -158,7 +158,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/by-slug/" + slug
+                    "/api/v1/articles/by-slug/" + slug
             ));
         } catch (Exception e) {
             logger.error("Lấy bài viết thất bại với slug {}: {}", slug, e.getMessage());
@@ -168,7 +168,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/by-slug/" + slug
+                    "/api/v1/articles/by-slug/" + slug
             ));
         }
     }
@@ -185,7 +185,7 @@ public class ArticleController {
                     articles,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         } catch (Exception e) {
             logger.error("Lấy danh sách bài viết thất bại: {}", e.getMessage());
@@ -195,7 +195,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         }
     }
@@ -212,7 +212,7 @@ public class ArticleController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id + "/hide"
+                    "/api/v1/articles/" + id + "/hide"
             ));
         } catch (Exception e) {
             logger.error("Ẩn bài viết thất bại ID {}: {}", id, e.getMessage());
@@ -222,7 +222,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id + "/hide"
+                    "/api/v1/articles/" + id + "/hide"
             ));
         }
     }
