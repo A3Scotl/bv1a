@@ -22,7 +22,7 @@ public class Doctor {
     @ManyToOne
     private Department department;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String slug;

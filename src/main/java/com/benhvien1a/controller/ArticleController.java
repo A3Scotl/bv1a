@@ -9,11 +9,13 @@ import com.benhvien1a.dto.response.ApiResponse;
 import com.benhvien1a.dto.ArticleDTO;
 import com.benhvien1a.model.Article;
 import com.benhvien1a.service.ArticleService;
+import com.benhvien1a.service.impl.CloudinaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +38,9 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse<Article>> createArticle(@Valid @RequestBody ArticleDTO request) {
+    public ResponseEntity<ApiResponse<Article>> createArticle(@Valid @ModelAttribute ArticleDTO request) {
         logger.info("Nhận yêu cầu tạo bài viết: {}", request.getTitle());
         try {
             Article article = articleService.createArticle(request);
@@ -63,9 +65,9 @@ public class ArticleController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse<Article>> updateArticle(@PathVariable Long id, @Valid @RequestBody ArticleDTO request) {
+    public ResponseEntity<ApiResponse<Article>> updateArticle(@PathVariable Long id, @Valid @ModelAttribute ArticleDTO request) {
         logger.info("Nhận yêu cầu cập nhật bài viết ID: {}", id);
         try {
             Article article = articleService.updateArticle(id, request);

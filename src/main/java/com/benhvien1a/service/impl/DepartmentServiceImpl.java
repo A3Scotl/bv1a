@@ -32,6 +32,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentRepository departmentRepository;
     private final CategoryRepository categoryRepository;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public Department createDepartment(DepartmentDTO request) {
@@ -52,11 +53,17 @@ public class DepartmentServiceImpl implements DepartmentService {
                     });
         }
 
+        String thumbnailUrl = null;
+        if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
+            thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
+        }
+
         Department department = Department.builder()
                 .name(request.getName())
                 .slug(slug)
                 .category(category)
                 .description(request.getDescription())
+                .thumbnail(thumbnailUrl)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
                 .isActive(request.isActive())
@@ -90,10 +97,17 @@ public class DepartmentServiceImpl implements DepartmentService {
                     });
         }
 
+        String thumbnailUrl = null;
+        if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
+            thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
+        }
+
+
         department.setName(request.getName());
         department.setSlug(newSlug);
         department.setCategory(category);
         department.setDescription(request.getDescription());
+        department.setThumbnail(thumbnailUrl);
         department.setUpdateAt(LocalDateTime.now());
         department.setActive(request.isActive());
 

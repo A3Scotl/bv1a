@@ -14,10 +14,12 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -36,9 +38,9 @@ public class DepartmentController {
 
     private final DepartmentService departmentService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Department>> createDepartment(@Valid @RequestBody DepartmentDTO request) {
+    public ResponseEntity<ApiResponse<Department>> createDepartment(@Valid @ModelAttribute DepartmentDTO request) {
         logger.info("Nhận yêu cầu tạo phòng ban: {}", request.getName());
         try {
             Department department = departmentService.createDepartment(request);
@@ -63,9 +65,9 @@ public class DepartmentController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Department>> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDTO request) {
+    public ResponseEntity<ApiResponse<Department>> updateDepartment(@PathVariable Long id, @Valid @ModelAttribute DepartmentDTO request) {
         logger.info("Nhận yêu cầu cập nhật phòng ban ID: {}", id);
         try {
             Department department = departmentService.updateDepartment(id, request);
