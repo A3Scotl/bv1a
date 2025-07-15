@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AppointmentServiceImpl implements AppointmentService {
     private static final Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
+    private final RecaptchaService recaptchaService;
 
     private final AppointmentRepository appointmentRepository;
     private final DoctorRepository doctorRepository;
@@ -44,20 +45,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Appointment createAppointment(AppointmentDTO request) {
         logger.info("Tạo cuộc hẹn với tên: {}", request.getFullName());
 
-        String slug = generateSlug(request.getFullName());
-        if (appointmentRepository.existsBySlug(slug)) {
-            logger.warn("Slug đã tồn tại: {}", slug);
-            throw new RuntimeException("Slug đã tồn tại");
+        // ✅ Kiểm tra reCAPTCHA
+        boolean isCaptchaValid = recaptchaService.verify(request.getRecaptchaToken());
+        if (!isCaptchaValid) {
+            logger.warn("reCAPTCHA không hợp lệ cho: {}", request.getFullName());
+            throw new RuntimeException("Xác minh reCAPTCHA thất bại. Vui lòng thử lại.");
         }
 
-        Doctor doctor = new Doctor();
-        if (request.getDoctorId() != null) {
-            doctor = doctorRepository.findById(request.getDoctorId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy bác sĩ với ID: {}", request.getDoctorId());
-                        return new RuntimeException("Không tìm thấy bác sĩ");
-                    });
-        }
+
 
         Appointment appointment = Appointment.builder()
                 .fullName(request.getFullName())
@@ -66,10 +61,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .date(request.getDate())
                 .timeSlot(request.getTimeSlot())
                 .note(request.getNote())
-                .slug(slug)
-                .doctor(doctor)
                 .status(AppointmentStatus.PENDING)
-                .isActive(request.isActive())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -90,11 +82,6 @@ public class AppointmentServiceImpl implements AppointmentService {
                     return new RuntimeException("Không tìm thấy cuộc hẹn");
                 });
 
-        String slug = generateSlug(request.getFullName());
-        if (!slug.equals(appointment.getSlug()) && appointmentRepository.existsBySlug(slug)) {
-            logger.warn("Slug đã tồn tại: {}", slug);
-            throw new RuntimeException("Slug đã tồn tại");
-        }
 
         appointment.setFullName(request.getFullName());
         appointment.setEmail(request.getEmail());
@@ -102,10 +89,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setDate(request.getDate());
         appointment.setTimeSlot(request.getTimeSlot());
         appointment.setNote(request.getNote());
-        appointment.setSlug(slug);
+
         appointment.setUpdatedAt(LocalDateTime.now());
         appointment.setStatus(request.getStatus());
-        appointment.setActive(request.isActive());
+
 
         Appointment updatedAppointment = appointmentRepository.save(appointment);
         logger.info("Đã cập nhật cuộc hẹn với ID: {}", updatedAppointment.getId());
@@ -127,16 +114,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         logger.info("Đã xóa cuộc hẹn với ID: {}", id);
     }
 
-    @Override
-    public Appointment getAppointmentBySlug(String slug) {
-        logger.info("Lấy cuộc hẹn với slug: {}", slug);
 
-        return appointmentRepository.findBySlug(slug)
-                .orElseThrow(() -> {
-                    logger.error("Không tìm thấy cuộc hẹn với slug: {}", slug);
-                    return new RuntimeException("Không tìm thấy cuộc hẹn");
-                });
-    }
 
     @Override
     public void hideAppointment(Long id) {
@@ -148,15 +126,11 @@ public class AppointmentServiceImpl implements AppointmentService {
                     return new RuntimeException("Không tìm thấy cuộc hẹn");
                 });
 
-        appointment.setActive(!appointment.isActive());
+
         appointment.setUpdatedAt(LocalDateTime.now());
         appointmentRepository.save(appointment);
         logger.info("Đã ẩn cuộc hẹn với ID: {}", id);
     }
 
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
-    }
+
 }

@@ -23,7 +23,6 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR' , 'USER')")
     public ResponseEntity<ApiResponse<Appointment>> createAppointment(@Valid @RequestBody AppointmentDTO appointment) {
         logger.info("Received request to create appointment: {}", appointment.getFullName());
         try {
@@ -50,7 +49,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR' , 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Appointment>> updateAppointment(@PathVariable Long id, @Valid @RequestBody AppointmentDTO appointment) {
         logger.info("Received request to update appointment with ID: {}", id);
         try {
@@ -77,7 +76,7 @@ public class AppointmentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR' , 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Void>> deleteAppointment(@PathVariable Long id) {
         logger.info("Received request to delete appointment with ID: {}", id);
         try {
@@ -104,7 +103,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR' , 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR' )")
     public ResponseEntity<ApiResponse<Appointment>> getAppointmentById(@PathVariable Long id) {
         logger.info("Received request to get appointment with ID: {}", id);
         try {
@@ -130,32 +129,6 @@ public class AppointmentController {
         }
     }
 
-    @GetMapping("/by-slug/{slug}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR' , 'USER')")
-    public ResponseEntity<ApiResponse<Appointment>> getAppointmentBySlug(@PathVariable String slug) {
-        logger.info("Received request to get appointment by slug: {}", slug);
-        try {
-            Appointment appointment = appointmentService.getAppointmentBySlug(slug);
-            return ResponseEntity.ok(new ApiResponse<>(
-                    true,
-                    "Appointment retrieved successfully",
-                    appointment,
-                    null,
-                    null,
-                    "/api/v1/appointments/by-slug/" + slug
-            ));
-        } catch (Exception e) {
-            logger.error("Failed to retrieve appointment by slug: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(new ApiResponse<>(
-                    false,
-                    "Failed to retrieve appointment by slug: " + e.getMessage(),
-                    null,
-                    e.getMessage(),
-                    null,
-                    "/api/v1/appointments/by-slug/" + slug
-            ));
-        }
-    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")

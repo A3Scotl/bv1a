@@ -38,16 +38,8 @@ public class Appointment {
     private String timeSlot;
     private String note;
 
-    @Column(unique = true)
-    private String slug;
-
-    @ManyToOne
-    private Doctor doctor;
-
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
-
-    private boolean isActive;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
