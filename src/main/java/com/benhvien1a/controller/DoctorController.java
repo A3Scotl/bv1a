@@ -192,12 +192,12 @@ public class DoctorController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Void>> hideDoctor(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn bác sĩ với ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái bác sĩ với ID: {}", id);
         try {
             doctorService.hideDoctor(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn bác sĩ thành công",
+                    "Thay đổi trạng thái thành công",
                     null,
                     null,
                     null,

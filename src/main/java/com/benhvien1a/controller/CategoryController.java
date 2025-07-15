@@ -201,22 +201,22 @@ public class CategoryController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> hideCategory(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn danh mục ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái danh mục ID: {}", id);
         try {
             categoryService.hideCategory(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn danh mục thành công",
+                    "Thay đổi trạng thái danh mục thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
                     "/api/v1/categories/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn danh mục thất bại ID {}: {}", id, e.getMessage());
+            logger.error("Thay đổi trạng thái danh mục thất bại ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn danh mục thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái danh mục thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),

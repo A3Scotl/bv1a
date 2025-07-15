@@ -201,22 +201,22 @@ public class MenuController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> hideMenu(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn menu ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái  menu ID: {}", id);
         try {
             menuService.hideMenu(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn menu thành công",
+                    "Thay đổi trạng thái thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
                     "/api/v1/menus/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn menu thất bại ID {}: {}", id, e.getMessage());
+            logger.error("Thay đổi trạng thái menu thất bại ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn menu thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái menu thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),

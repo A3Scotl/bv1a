@@ -191,22 +191,22 @@ public class ServiceController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Void>> hideService(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn dịch vụ với ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái dịch vụ với ID: {}", id);
         try {
             serviceService.hideService(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn dịch vụ thành công",
+                    "Thay đổi trạng thái dịch vụ thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
                     "/api/v1/services/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn dịch vụ thất bại: {}", e.getMessage());
+            logger.error("Thay đổi trạng thái dịch vụ thất bại: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn dịch vụ thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái dịch vụ thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),

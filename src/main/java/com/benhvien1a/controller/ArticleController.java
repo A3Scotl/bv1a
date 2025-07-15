@@ -203,22 +203,22 @@ public class ArticleController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Void>> hideArticle(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn bài viết ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái bài viết ID: {}", id);
         try {
             articleService.hideArticle(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn bài viết thành công",
+                    "Thay đổi trạng thái bài viết thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
                     "/api/v1/articles/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn bài viết thất bại ID {}: {}", id, e.getMessage());
+            logger.error("Thay đổi trạng thái bài viết thất bại ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn bài viết thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái bài viết thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),

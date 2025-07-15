@@ -203,22 +203,22 @@ public class DepartmentController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> hideDepartment(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn phòng ban ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái phong ban ID: {}", id);
         try {
             departmentService.hideDepartment(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn phòng ban thành công",
+                    "Thay đổi trạng thái thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
                     "/api/v1/departments/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn phòng ban thất bại ID {}: {}", id, e.getMessage());
+            logger.error("Thay đổi trạng thái phòng ban thất bại ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn phòng ban thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái phòng ban thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
