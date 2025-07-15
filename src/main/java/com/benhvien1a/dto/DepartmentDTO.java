@@ -22,6 +22,6 @@ public class DepartmentDTO {
     private String description;
     private Long categoryId;
     private MultipartFile thumbnail;
-
+    private String slug;
     private boolean isActive;
 }

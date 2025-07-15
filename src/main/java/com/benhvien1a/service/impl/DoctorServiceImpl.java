@@ -90,7 +90,18 @@ public class DoctorServiceImpl implements DoctorService {
                     return new RuntimeException("Không tìm thấy bac si");
                 });
 
-        String newSlug = generateSlug(request.getFullName());
+        String newSlug;
+
+        if (request.getSlug() != null) {
+            // Nếu truyền slug thì dùng luôn
+            newSlug = request.getSlug().isBlank()
+                    ? generateSlug(request.getFullName()) // nếu slug rỗng → generate
+                    : request.getSlug();
+        } else {
+            // Nếu không truyền slug → luôn generate từ name
+            newSlug = generateSlug(request.getFullName());
+        }
+
         if (!doctor.getSlug().equals(newSlug) && doctorRepository.existsBySlug(newSlug)) {
             logger.warn("Slug đã tồn tại: {}", newSlug);
             throw new RuntimeException("Slug đã tồn tại");

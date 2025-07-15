@@ -80,6 +80,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public com.benhvien1a.model.Service updateService(Long id, ServiceDTO request) {
+        logger.info("Slug từ client: {}", request.getSlug());
         logger.info("Cập nhật dịch vụ với ID: {}", id);
 
         com.benhvien1a.model.Service service = serviceRepository.findById(id)
@@ -88,11 +89,24 @@ public class ServiceServiceImpl implements ServiceService {
                     return new RuntimeException("Không tìm thấy dịch vụ");
                 });
 
-        String slug = generateSlug(request.getName());
-        if (!service.getSlug().equals(slug) && serviceRepository.existsBySlug(slug)) {
-            logger.warn("Slug đã tồn tại: {}", slug);
+        String newSlug;
+
+        if (request.getSlug() != null) {
+            // Nếu truyền slug thì dùng luôn
+            newSlug = request.getSlug().isBlank()
+                    ? generateSlug(request.getName()) // nếu slug rỗng → generate
+                    : request.getSlug();
+        } else {
+            // Nếu không truyền slug → luôn generate từ name
+            newSlug = generateSlug(request.getName());
+        }
+
+
+        if (!service.getSlug().equals(newSlug) && serviceRepository.existsBySlug(newSlug)) {
+            logger.warn("Slug đã tồn tại: {}", newSlug);
             throw new RuntimeException("Slug đã tồn tại");
         }
+
 
         Category category = new Category();
         if (request.getCategoryId() != null) {
@@ -103,18 +117,19 @@ public class ServiceServiceImpl implements ServiceService {
                     });
         }
 
-        String thumbnailUrl = null;
+        String thumbnailUrl = service.getThumbnail(); // giữ lại thumbnail cũ nếu không gửi mới
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
 
         service.setName(request.getName());
-        service.setSlug(slug);
+        service.setSlug(newSlug);
         service.setCategory(category);
         service.setDescription(request.getDescription());
         service.setThumbnail(thumbnailUrl);
         service.setActive(request.isActive());
         service.setUpdatedAt(LocalDateTime.now());
+
         serviceRepository.save(service);
         logger.info("Đã cập nhật dịch vụ với ID: {}", id);
         return service;
