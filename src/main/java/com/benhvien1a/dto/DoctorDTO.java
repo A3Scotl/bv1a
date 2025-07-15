@@ -11,6 +11,7 @@ public class DoctorDTO {
     private String fullName;
     private MultipartFile avatarUrl;
     private String description;
+    private String slug;
     private Long departmentId;
     private boolean isActive;
 }

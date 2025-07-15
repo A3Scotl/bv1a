@@ -12,6 +12,7 @@ import com.benhvien1a.repository.CategoryRepository;
 import com.benhvien1a.repository.DepartmentRepository;
 import com.benhvien1a.repository.ServiceRepository;
 import com.benhvien1a.service.CategoryService;
+import com.benhvien1a.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(CategoryDTO request) {
         logger.info("Tạo danh mục với tên: {}", request.getName());
 
-        String slug = generateSlug(request.getName());
+        String slug = SlugUtils.generateSlug(request.getName());
         if (categoryRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -67,7 +68,23 @@ public class CategoryServiceImpl implements CategoryService {
                     return new RuntimeException("Không tìm thấy danh mục");
                 });
 
-        String newSlug = generateSlug(request.getName());
+        String newSlug;
+
+        // Nếu người dùng sửa slug khác với slug hiện tại → dùng slug mới
+        if (request.getSlug() != null && !request.getSlug().isBlank() && !request.getSlug().equals(category.getSlug())) {
+            newSlug = request.getSlug();
+        }
+        // Nếu slug không đổi nhưng name thay đổi → generate slug từ name
+        else if (!request.getName().equals(category.getName())) {
+            newSlug = SlugUtils.generateSlug(request.getName());
+        }
+        // Không đổi gì → giữ nguyên slug cũ
+        else {
+            newSlug = category.getSlug();
+        }
+
+
+
         if (!category.getSlug().equals(newSlug) && categoryRepository.existsBySlug(newSlug)) {
             logger.warn("Slug đã tồn tại: {}", newSlug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -148,11 +165,5 @@ public class CategoryServiceImpl implements CategoryService {
         category.setUpdateAt(LocalDateTime.now());
         categoryRepository.save(category);
         logger.info("Ẩn danh mục thành công: {}", id);
-    }
-
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
     }
 }

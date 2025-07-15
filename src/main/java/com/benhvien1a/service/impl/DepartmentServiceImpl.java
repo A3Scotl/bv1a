@@ -11,6 +11,7 @@ import com.benhvien1a.model.Department;
 import com.benhvien1a.repository.CategoryRepository;
 import com.benhvien1a.repository.DepartmentRepository;
 import com.benhvien1a.service.DepartmentService;
+import com.benhvien1a.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Department createDepartment(DepartmentDTO request) {
         logger.info("Tạo phòng ban với tên: {}", request.getName());
 
-        String slug = generateSlug(request.getName());
+        String slug = SlugUtils.generateSlug(request.getName());
         if (departmentRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -82,7 +83,21 @@ public class DepartmentServiceImpl implements DepartmentService {
                     return new RuntimeException("Không tìm thấy phòng ban");
                 });
 
-        String newSlug = generateSlug(request.getName());
+        String newSlug;
+
+        // Nếu người dùng sửa slug khác với slug hiện tại → dùng slug mới
+        if (request.getSlug() != null && !request.getSlug().isBlank() && !request.getSlug().equals(department.getSlug())) {
+            newSlug = request.getSlug();
+        }
+        // Nếu slug không đổi nhưng name thay đổi → generate slug từ name
+        else if (!request.getName().equals(department.getName())) {
+            newSlug = SlugUtils.generateSlug(request.getName());
+        }
+        // Không đổi gì → giữ nguyên slug cũ
+        else {
+            newSlug = department.getSlug();
+        }
+
         if (!department.getSlug().equals(newSlug) && departmentRepository.existsBySlug(newSlug)) {
             logger.warn("Slug đã tồn tại: {}", newSlug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -177,9 +192,5 @@ public class DepartmentServiceImpl implements DepartmentService {
         logger.info("Ẩn phòng ban thành công: {}", id);
     }
 
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
-    }
+
 }

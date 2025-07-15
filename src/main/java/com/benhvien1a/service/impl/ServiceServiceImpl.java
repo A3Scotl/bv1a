@@ -5,6 +5,7 @@ import com.benhvien1a.model.Category;
 import com.benhvien1a.repository.CategoryRepository;
 import com.benhvien1a.repository.ServiceRepository;
 import com.benhvien1a.service.ServiceService;
+import com.benhvien1a.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class ServiceServiceImpl implements ServiceService {
     public com.benhvien1a.model.Service createService(ServiceDTO request) {
         logger.info("Tạo dịch vụ với tên: {}", request.getName());
 
-        String slug = generateSlug(request.getName());
+        String slug = SlugUtils.generateSlug(request.getName());
         if (serviceRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -80,6 +81,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public com.benhvien1a.model.Service updateService(Long id, ServiceDTO request) {
+        logger.info("Slug từ client: {}", request.getSlug());
         logger.info("Cập nhật dịch vụ với ID: {}", id);
 
         com.benhvien1a.model.Service service = serviceRepository.findById(id)
@@ -88,11 +90,26 @@ public class ServiceServiceImpl implements ServiceService {
                     return new RuntimeException("Không tìm thấy dịch vụ");
                 });
 
-        String slug = generateSlug(request.getName());
-        if (!service.getSlug().equals(slug) && serviceRepository.existsBySlug(slug)) {
-            logger.warn("Slug đã tồn tại: {}", slug);
+        String newSlug;
+
+        // Nếu người dùng sửa slug khác với slug hiện tại → dùng slug mới
+        if (request.getSlug() != null && !request.getSlug().isBlank() && !request.getSlug().equals(service.getSlug())) {
+            newSlug = request.getSlug();
+        }
+        // Nếu slug không đổi nhưng name thay đổi → generate slug từ name
+        else if (!request.getName().equals(service.getName())) {
+            newSlug = SlugUtils.generateSlug(request.getName());
+        }
+        // Không đổi gì → giữ nguyên slug cũ
+        else {
+            newSlug = service.getSlug();
+        }
+
+        if (!service.getSlug().equals(newSlug) && serviceRepository.existsBySlug(newSlug)) {
+            logger.warn("Slug đã tồn tại: {}", newSlug);
             throw new RuntimeException("Slug đã tồn tại");
         }
+
 
         Category category = new Category();
         if (request.getCategoryId() != null) {
@@ -103,18 +120,19 @@ public class ServiceServiceImpl implements ServiceService {
                     });
         }
 
-        String thumbnailUrl = null;
+        String thumbnailUrl = service.getThumbnail(); // giữ lại thumbnail cũ nếu không gửi mới
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
 
         service.setName(request.getName());
-        service.setSlug(slug);
+        service.setSlug(newSlug);
         service.setCategory(category);
         service.setDescription(request.getDescription());
         service.setThumbnail(thumbnailUrl);
         service.setActive(request.isActive());
         service.setUpdatedAt(LocalDateTime.now());
+
         serviceRepository.save(service);
         logger.info("Đã cập nhật dịch vụ với ID: {}", id);
         return service;
@@ -167,9 +185,5 @@ public class ServiceServiceImpl implements ServiceService {
         logger.info("Đã ẩn dịch vụ với ID: {}", id);
     }
 
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
-    }
+
 }
