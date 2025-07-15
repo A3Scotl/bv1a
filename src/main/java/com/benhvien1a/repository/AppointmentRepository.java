@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment,Long> {
-    boolean existsBySlug(String slug);
-    Optional<Appointment> findBySlug(String slug);
+
 }

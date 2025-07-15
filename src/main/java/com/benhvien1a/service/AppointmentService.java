@@ -12,6 +12,5 @@ public interface AppointmentService {
     Appointment createAppointment(AppointmentDTO request);
     Appointment updateAppointment(Long id, AppointmentDTO request);
     void deleteAppointment(Long id);
-    Appointment getAppointmentBySlug(String slug);
     void hideAppointment(Long id);
 }

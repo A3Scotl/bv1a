@@ -14,7 +14,6 @@ public class AppointmentDTO {
     private LocalDate date;
     private String timeSlot;
     private String note;
-    private Long doctorId;
     private AppointmentStatus status;
-    private boolean isActive;
+    private String recaptchaToken;
 }
