@@ -32,7 +32,7 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public Menu createMenu(MenuDTO request) {
         logger.info("Tạo menu với tiêu đề: {}", request.getTitle());
-
+        
         String slug = generateSlug(request.getTitle());
         if (menuRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
@@ -124,7 +124,7 @@ public class MenuServiceImpl implements MenuService {
                     return new RuntimeException("Không tìm thấy menu");
                 });
 
-        menu.setActive(false);
+        menu.setActive(!menu.isActive());
         menuRepository.save(menu);
         logger.info("Ẩn menu thành công: {}", id);
     }

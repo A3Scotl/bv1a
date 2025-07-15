@@ -171,7 +171,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                     return new RuntimeException("Không tìm thấy phòng ban");
                 });
 
-        department.setActive(false);
+        department.setActive(!department.isActive());
         department.setUpdateAt(LocalDateTime.now());
         departmentRepository.save(department);
         logger.info("Ẩn phòng ban thành công: {}", id);

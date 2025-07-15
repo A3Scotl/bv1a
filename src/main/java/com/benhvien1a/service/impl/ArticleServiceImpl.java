@@ -274,7 +274,7 @@ public class ArticleServiceImpl implements ArticleService {
                     return new RuntimeException("Không tìm thấy bài viết");
                 });
 
-        article.setActive(false);
+        article.setActive(!article.isActive());
         article.setUpdateAt(LocalDateTime.now());
         articleRepository.save(article);
         logger.info("Ẩn bài viết thành công: {}", id);

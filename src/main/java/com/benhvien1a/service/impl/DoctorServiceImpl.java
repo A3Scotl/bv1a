@@ -162,7 +162,7 @@ public class DoctorServiceImpl implements DoctorService {
                     return new RuntimeException("Không tìm thấy bac si");
                 });
 
-        doctor.setActive(false);
+        doctor.setActive(!doctor.isActive());
         doctor.setUpdateAt(LocalDateTime.now());
         doctorRepository.save(doctor);
         logger.info("Đã ẩn bac si với ID: {}", id);

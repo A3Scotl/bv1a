@@ -161,7 +161,7 @@ public class ServiceServiceImpl implements ServiceService {
                     return new RuntimeException("Không tìm thấy dịch vụ");
                 });
 
-        service.setActive(false);
+        service.setActive(!service.isActive());
         service.setUpdatedAt(LocalDateTime.now());
         serviceRepository.save(service);
         logger.info("Đã ẩn dịch vụ với ID: {}", id);

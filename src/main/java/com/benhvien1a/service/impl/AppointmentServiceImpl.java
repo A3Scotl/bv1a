@@ -148,7 +148,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                     return new RuntimeException("Không tìm thấy cuộc hẹn");
                 });
 
-        appointment.setActive(false);
+        appointment.setActive(!appointment.isActive());
         appointment.setUpdatedAt(LocalDateTime.now());
         appointmentRepository.save(appointment);
         logger.info("Đã ẩn cuộc hẹn với ID: {}", id);
