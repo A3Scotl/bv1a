@@ -5,6 +5,7 @@ import com.benhvien1a.model.Category;
 import com.benhvien1a.repository.CategoryRepository;
 import com.benhvien1a.repository.ServiceRepository;
 import com.benhvien1a.service.ServiceService;
+import com.benhvien1a.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class ServiceServiceImpl implements ServiceService {
     public com.benhvien1a.model.Service createService(ServiceDTO request) {
         logger.info("Tạo dịch vụ với tên: {}", request.getName());
 
-        String slug = generateSlug(request.getName());
+        String slug = SlugUtils.generateSlug(request.getName());
         if (serviceRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -91,16 +92,18 @@ public class ServiceServiceImpl implements ServiceService {
 
         String newSlug;
 
-        if (request.getSlug() != null) {
-            // Nếu truyền slug thì dùng luôn
-            newSlug = request.getSlug().isBlank()
-                    ? generateSlug(request.getName()) // nếu slug rỗng → generate
-                    : request.getSlug();
-        } else {
-            // Nếu không truyền slug → luôn generate từ name
-            newSlug = generateSlug(request.getName());
+        // Nếu người dùng sửa slug khác với slug hiện tại → dùng slug mới
+        if (request.getSlug() != null && !request.getSlug().isBlank() && !request.getSlug().equals(service.getSlug())) {
+            newSlug = request.getSlug();
         }
-
+        // Nếu slug không đổi nhưng name thay đổi → generate slug từ name
+        else if (!request.getName().equals(service.getName())) {
+            newSlug = SlugUtils.generateSlug(request.getName());
+        }
+        // Không đổi gì → giữ nguyên slug cũ
+        else {
+            newSlug = service.getSlug();
+        }
 
         if (!service.getSlug().equals(newSlug) && serviceRepository.existsBySlug(newSlug)) {
             logger.warn("Slug đã tồn tại: {}", newSlug);
@@ -182,9 +185,5 @@ public class ServiceServiceImpl implements ServiceService {
         logger.info("Đã ẩn dịch vụ với ID: {}", id);
     }
 
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
-    }
+
 }

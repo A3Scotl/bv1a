@@ -6,6 +6,7 @@ import com.benhvien1a.model.Doctor;
 import com.benhvien1a.repository.DepartmentRepository;
 import com.benhvien1a.repository.DoctorRepository;
 import com.benhvien1a.service.DoctorService;
+import com.benhvien1a.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class DoctorServiceImpl implements DoctorService {
     public Doctor creaeDoctor(DoctorDTO request) {
         logger.info("Tạo bac si với tên: {}", request.getFullName());
 
-        String slug = generateSlug(request.getFullName());
+        String slug = SlugUtils.generateSlug(request.getFullName());
         if (doctorRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -92,14 +93,17 @@ public class DoctorServiceImpl implements DoctorService {
 
         String newSlug;
 
-        if (request.getSlug() != null) {
-            // Nếu truyền slug thì dùng luôn
-            newSlug = request.getSlug().isBlank()
-                    ? generateSlug(request.getFullName()) // nếu slug rỗng → generate
-                    : request.getSlug();
-        } else {
-            // Nếu không truyền slug → luôn generate từ name
-            newSlug = generateSlug(request.getFullName());
+        // Nếu người dùng sửa slug khác với slug hiện tại → dùng slug mới
+        if (request.getSlug() != null && !request.getSlug().isBlank() && !request.getSlug().equals(doctor.getSlug())) {
+            newSlug = request.getSlug();
+        }
+        // Nếu slug không đổi nhưng name thay đổi → generate slug từ name
+        else if (!request.getFullName().equals(doctor.getFullName())) {
+            newSlug = SlugUtils.generateSlug(request.getFullName());
+        }
+        // Không đổi gì → giữ nguyên slug cũ
+        else {
+            newSlug = doctor.getSlug();
         }
 
         if (!doctor.getSlug().equals(newSlug) && doctorRepository.existsBySlug(newSlug)) {
@@ -179,9 +183,4 @@ public class DoctorServiceImpl implements DoctorService {
         logger.info("Đã ẩn bac si với ID: {}", id);
     }
 
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
-    }
 }
