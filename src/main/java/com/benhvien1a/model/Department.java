@@ -25,6 +25,8 @@ public class Department {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    private String thumbnail;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

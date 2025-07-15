@@ -18,6 +18,5 @@ import lombok.Data;
 public class CategoryDTO {
     @NotBlank(message = "Name is mandatory")
     private String name;
-
     private boolean isActive;
 }

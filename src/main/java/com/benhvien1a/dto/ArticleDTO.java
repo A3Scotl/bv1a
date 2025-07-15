@@ -5,8 +5,10 @@
  */
 package com.benhvien1a.dto;
 
+import com.benhvien1a.model.ArticleStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 /*
  * @description: DTO for Article entity
@@ -24,4 +26,10 @@ public class ArticleDTO {
     private Long categoryId;
 
     private boolean isActive;
+
+    private MultipartFile thumbnail;
+
+    private ArticleStatus status;
+
+//    private List<MultipartFile> images; // Multiple additional images
 }

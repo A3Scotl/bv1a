@@ -7,6 +7,7 @@ package com.benhvien1a.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 /*
  * @description: DTO for Service entity
@@ -18,6 +19,10 @@ import lombok.Data;
 public class ServiceDTO {
     @NotBlank(message = "Tên dịch vụ là bắt buộc")
     private String name;
+
+    private String description;
+
+    private MultipartFile thumbnail;
 
     private Long categoryId;
 

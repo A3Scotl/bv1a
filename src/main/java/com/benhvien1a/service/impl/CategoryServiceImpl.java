@@ -144,7 +144,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new RuntimeException("Không thể ẩn danh mục vì đang được sử dụng");
         }
 
-        category.setActive(false);
+        category.setActive(!category.isActive());
         category.setUpdateAt(LocalDateTime.now());
         categoryRepository.save(category);
         logger.info("Ẩn danh mục thành công: {}", id);

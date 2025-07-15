@@ -29,7 +29,7 @@ import java.util.List;
  * @version: 1.0
  */
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 public class CategoryController {
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
@@ -48,7 +48,7 @@ public class CategoryController {
                     category,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories"
+                    "/api/v1/categories"
             ));
         } catch (Exception e) {
             logger.error("Tạo danh mục thất bại: {}", e.getMessage());
@@ -58,7 +58,7 @@ public class CategoryController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories"
+                    "/api/v1/categories"
             ));
         }
     }
@@ -75,7 +75,7 @@ public class CategoryController {
                     category,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id
+                    "/api/v1/categories/" + id
             ));
         } catch (Exception e) {
             logger.error("Cập nhật danh mục thất bại ID {}: {}", id, e.getMessage());
@@ -85,7 +85,7 @@ public class CategoryController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id
+                    "/api/v1/categories/" + id
             ));
         }
     }
@@ -102,7 +102,7 @@ public class CategoryController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id
+                    "/api/v1/categories/" + id
             ));
         } catch (Exception e) {
             logger.error("Xóa danh mục thất bại ID {}: {}", id, e.getMessage());
@@ -112,7 +112,7 @@ public class CategoryController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id
+                    "/api/v1/categories/" + id
             ));
         }
     }
@@ -129,7 +129,7 @@ public class CategoryController {
                     category,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id
+                    "/api/v1/categories/" + id
             ));
         } catch (Exception e) {
             logger.error("Lấy danh mục thất bại ID {}: {}", id, e.getMessage());
@@ -139,7 +139,7 @@ public class CategoryController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id
+                    "/api/v1/categories/" + id
             ));
         }
     }
@@ -156,7 +156,7 @@ public class CategoryController {
                     category,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/by-slug/" + slug
+                    "/api/v1/categories/by-slug/" + slug
             ));
         } catch (Exception e) {
             logger.error("Lấy danh mục thất bại với slug {}: {}", slug, e.getMessage());
@@ -166,7 +166,7 @@ public class CategoryController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/by-slug/" + slug
+                    "/api/v1/categories/by-slug/" + slug
             ));
         }
     }
@@ -183,7 +183,7 @@ public class CategoryController {
                     categories,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories"
+                    "/api/v1/categories"
             ));
         } catch (Exception e) {
             logger.error("Lấy danh sách danh mục thất bại: {}", e.getMessage());
@@ -193,7 +193,7 @@ public class CategoryController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories"
+                    "/api/v1/categories"
             ));
         }
     }
@@ -201,26 +201,26 @@ public class CategoryController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> hideCategory(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn danh mục ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái danh mục ID: {}", id);
         try {
             categoryService.hideCategory(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn danh mục thành công",
+                    "Thay đổi trạng thái danh mục thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id + "/hide"
+                    "/api/v1/categories/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn danh mục thất bại ID {}: {}", id, e.getMessage());
+            logger.error("Thay đổi trạng thái danh mục thất bại ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn danh mục thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái danh mục thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/categories/" + id + "/hide"
+                    "/api/v1/categories/" + id + "/hide"
             ));
         }
     }

@@ -9,11 +9,13 @@ import com.benhvien1a.dto.response.ApiResponse;
 import com.benhvien1a.dto.ArticleDTO;
 import com.benhvien1a.model.Article;
 import com.benhvien1a.service.ArticleService;
+import com.benhvien1a.service.impl.CloudinaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,16 +31,16 @@ import java.util.List;
  * @version: 1.0
  */
 @RestController
-@RequestMapping("/api/articles")
+@RequestMapping("/api/v1/articles")
 @RequiredArgsConstructor
 public class ArticleController {
     private static final Logger logger = LoggerFactory.getLogger(ArticleController.class);
 
     private final ArticleService articleService;
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse<Article>> createArticle(@Valid @RequestBody ArticleDTO request) {
+    public ResponseEntity<ApiResponse<Article>> createArticle(@Valid @ModelAttribute ArticleDTO request) {
         logger.info("Nhận yêu cầu tạo bài viết: {}", request.getTitle());
         try {
             Article article = articleService.createArticle(request);
@@ -48,7 +50,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         } catch (Exception e) {
             logger.error("Tạo bài viết thất bại: {}", e.getMessage());
@@ -58,14 +60,14 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse<Article>> updateArticle(@PathVariable Long id, @Valid @RequestBody ArticleDTO request) {
+    public ResponseEntity<ApiResponse<Article>> updateArticle(@PathVariable Long id, @Valid @ModelAttribute ArticleDTO request) {
         logger.info("Nhận yêu cầu cập nhật bài viết ID: {}", id);
         try {
             Article article = articleService.updateArticle(id, request);
@@ -75,7 +77,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         } catch (Exception e) {
             logger.error("Cập nhật bài viết thất bại ID {}: {}", id, e.getMessage());
@@ -85,7 +87,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         }
     }
@@ -102,7 +104,7 @@ public class ArticleController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         } catch (Exception e) {
             logger.error("Xóa bài viết thất bại ID {}: {}", id, e.getMessage());
@@ -112,7 +114,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         }
     }
@@ -129,7 +131,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         } catch (Exception e) {
             logger.error("Lấy bài viết thất bại ID {}: {}", id, e.getMessage());
@@ -139,7 +141,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id
+                    "/api/v1/articles/" + id
             ));
         }
     }
@@ -156,7 +158,7 @@ public class ArticleController {
                     article,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/by-slug/" + slug
+                    "/api/v1/articles/by-slug/" + slug
             ));
         } catch (Exception e) {
             logger.error("Lấy bài viết thất bại với slug {}: {}", slug, e.getMessage());
@@ -166,7 +168,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/by-slug/" + slug
+                    "/api/v1/articles/by-slug/" + slug
             ));
         }
     }
@@ -183,7 +185,7 @@ public class ArticleController {
                     articles,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         } catch (Exception e) {
             logger.error("Lấy danh sách bài viết thất bại: {}", e.getMessage());
@@ -193,7 +195,7 @@ public class ArticleController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles"
+                    "/api/v1/articles"
             ));
         }
     }
@@ -201,26 +203,26 @@ public class ArticleController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Void>> hideArticle(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn bài viết ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái bài viết ID: {}", id);
         try {
             articleService.hideArticle(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn bài viết thành công",
+                    "Thay đổi trạng thái bài viết thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id + "/hide"
+                    "/api/v1/articles/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn bài viết thất bại ID {}: {}", id, e.getMessage());
+            logger.error("Thay đổi trạng thái bài viết thất bại ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn bài viết thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái bài viết thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/articles/" + id + "/hide"
+                    "/api/v1/articles/" + id + "/hide"
             ));
         }
     }

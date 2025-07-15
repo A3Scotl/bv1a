@@ -15,6 +15,7 @@ package com.benhvien1a.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -25,7 +26,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Appointment {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fullName;
@@ -36,11 +38,17 @@ public class Appointment {
     private String timeSlot;
     private String note;
 
+    @Column(unique = true)
+    private String slug;
+
     @ManyToOne
     private Doctor doctor;
 
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 
+    private boolean isActive;
+
     private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
 }

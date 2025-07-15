@@ -7,6 +7,7 @@ package com.benhvien1a.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 /*
  * @description: DTO for Department entity
@@ -20,6 +21,7 @@ public class DepartmentDTO {
     private String name;
     private String description;
     private Long categoryId;
+    private MultipartFile thumbnail;
 
     private boolean isActive;
 }

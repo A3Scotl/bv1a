@@ -29,7 +29,7 @@ import java.util.List;
  * @version: 1.0
  */
 @RestController
-@RequestMapping("/api/menus")
+@RequestMapping("/api/v1/menus")
 @RequiredArgsConstructor
 public class MenuController {
     private static final Logger logger = LoggerFactory.getLogger(MenuController.class);
@@ -48,7 +48,7 @@ public class MenuController {
                     menu,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus"
+                    "/api/v1/menus"
             ));
         } catch (Exception e) {
             logger.error("Tạo menu thất bại: {}", e.getMessage());
@@ -58,7 +58,7 @@ public class MenuController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus"
+                    "/api/v1/menus"
             ));
         }
     }
@@ -75,7 +75,7 @@ public class MenuController {
                     menu,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id
+                    "/api/v1/menus/" + id
             ));
         } catch (Exception e) {
             logger.error("Cập nhật menu thất bại ID {}: {}", id, e.getMessage());
@@ -85,7 +85,7 @@ public class MenuController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id
+                    "/api/v1/menus/" + id
             ));
         }
     }
@@ -102,7 +102,7 @@ public class MenuController {
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id
+                    "/api/v1/menus/" + id
             ));
         } catch (Exception e) {
             logger.error("Xóa menu thất bại ID {}: {}", id, e.getMessage());
@@ -112,7 +112,7 @@ public class MenuController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id
+                    "/api/v1/menus/" + id
             ));
         }
     }
@@ -129,7 +129,7 @@ public class MenuController {
                     menu,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id
+                    "/api/v1/menus/" + id
             ));
         } catch (Exception e) {
             logger.error("Lấy menu thất bại ID {}: {}", id, e.getMessage());
@@ -139,7 +139,7 @@ public class MenuController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id
+                    "/api/v1/menus/" + id
             ));
         }
     }
@@ -156,7 +156,7 @@ public class MenuController {
                     menu,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/by-slug/" + slug
+                    "/api/v1/menus/by-slug/" + slug
             ));
         } catch (Exception e) {
             logger.error("Lấy menu thất bại với slug {}: {}", slug, e.getMessage());
@@ -166,7 +166,7 @@ public class MenuController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/by-slug/" + slug
+                    "/api/v1/menus/by-slug/" + slug
             ));
         }
     }
@@ -183,7 +183,7 @@ public class MenuController {
                     menus,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus"
+                    "/api/v1/menus"
             ));
         } catch (Exception e) {
             logger.error("Lấy danh sách menu thất bại: {}", e.getMessage());
@@ -193,7 +193,7 @@ public class MenuController {
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus"
+                    "/api/v1/menus"
             ));
         }
     }
@@ -201,26 +201,26 @@ public class MenuController {
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> hideMenu(@PathVariable Long id) {
-        logger.info("Nhận yêu cầu ẩn menu ID: {}", id);
+        logger.info("Nhận yêu cầu Thay đổi trạng thái  menu ID: {}", id);
         try {
             menuService.hideMenu(id);
             return ResponseEntity.ok(new ApiResponse<>(
                     true,
-                    "Ẩn menu thành công",
+                    "Thay đổi trạng thái thành công",
                     null,
                     null,
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id + "/hide"
+                    "/api/v1/menus/" + id + "/hide"
             ));
         } catch (Exception e) {
-            logger.error("Ẩn menu thất bại ID {}: {}", id, e.getMessage());
+            logger.error("Thay đổi trạng thái menu thất bại ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,
-                    "Ẩn menu thất bại: " + e.getMessage(),
+                    "Thay đổi trạng thái menu thất bại: " + e.getMessage(),
                     null,
                     e.getMessage(),
                     ZonedDateTime.now(ZoneId.of("UTC")),
-                    "/api/menus/" + id + "/hide"
+                    "/api/v1/menus/" + id + "/hide"
             ));
         }
     }

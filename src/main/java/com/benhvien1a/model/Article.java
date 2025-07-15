@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "articles")
@@ -19,12 +21,18 @@ public class Article {
     @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(unique = true)
     private String slug;
 
     private String thumbnailUrl;
+
+//    @ElementCollection
+//    @CollectionTable(name = "article_images", joinColumns = @JoinColumn(name = "article_id"))
+//    @Column(name = "image_url")
+//    private List<String> imageUrls = new ArrayList<>(); // Multiple additional image URLs
 
     @Enumerated(EnumType.STRING)
     private ArticleStatus status = ArticleStatus.DRAFT;
@@ -34,7 +42,6 @@ public class Article {
 
     @ManyToOne
     private Category category;
-
 
 
     private LocalDateTime publishAt;
