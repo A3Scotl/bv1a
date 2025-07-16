@@ -6,9 +6,7 @@
 package com.benhvien1a.service.impl;
 
 import com.benhvien1a.dto.DepartmentDTO;
-import com.benhvien1a.model.Category;
 import com.benhvien1a.model.Department;
-import com.benhvien1a.repository.CategoryRepository;
 import com.benhvien1a.repository.DepartmentRepository;
 import com.benhvien1a.service.DepartmentService;
 import com.benhvien1a.util.SlugUtils;
@@ -32,7 +30,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     private static final Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
     private final DepartmentRepository departmentRepository;
-    private final CategoryRepository categoryRepository;
+
     private final CloudinaryService cloudinaryService;
 
     @Override
@@ -45,14 +43,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new RuntimeException("Slug đã tồn tại");
         }
 
-        Category category = null;
-        if (request.getCategoryId() != null) {
-            category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy danh mục với ID: {}", request.getCategoryId());
-                        return new RuntimeException("Không tìm thấy danh mục");
-                    });
-        }
+
 
         String thumbnailUrl = null;
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
@@ -62,7 +53,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = Department.builder()
                 .name(request.getName())
                 .slug(slug)
-                .category(category)
+
                 .description(request.getDescription())
                 .thumbnail(thumbnailUrl)
                 .createAt(LocalDateTime.now())
@@ -103,14 +94,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new RuntimeException("Slug đã tồn tại");
         }
 
-        Category category = null;
-        if (request.getCategoryId() != null) {
-            category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy danh mục với ID: {}", request.getCategoryId());
-                        return new RuntimeException("Không tìm thấy danh mục");
-                    });
-        }
+
 
         String thumbnailUrl = null;
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
@@ -120,7 +104,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         department.setName(request.getName());
         department.setSlug(newSlug);
-        department.setCategory(category);
+
         department.setDescription(request.getDescription());
         department.setThumbnail(thumbnailUrl);
         department.setUpdateAt(LocalDateTime.now());

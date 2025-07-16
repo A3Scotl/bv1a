@@ -8,10 +8,8 @@ package com.benhvien1a.service.impl;
 import com.benhvien1a.dto.ArticleDTO;
 import com.benhvien1a.model.Article;
 import com.benhvien1a.model.ArticleStatus;
-import com.benhvien1a.model.Category;
 import com.benhvien1a.model.User;
 import com.benhvien1a.repository.ArticleRepository;
-import com.benhvien1a.repository.CategoryRepository;
 import com.benhvien1a.repository.UserRepository;
 import com.benhvien1a.service.ArticleService;
 import org.springframework.security.core.Authentication;
@@ -38,7 +36,7 @@ public class ArticleServiceImpl implements ArticleService {
     private static final Logger logger = LoggerFactory.getLogger(ArticleServiceImpl.class);
 
     private final ArticleRepository articleRepository;
-    private final CategoryRepository categoryRepository;
+
     private final CloudinaryService cloudinaryService;
     private final UserRepository userRepository;
 
@@ -52,14 +50,7 @@ public class ArticleServiceImpl implements ArticleService {
             throw new RuntimeException("Slug đã tồn tại");
         }
 
-        Category category = null;
-        if (request.getCategoryId() != null) {
-            category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy danh mục với ID: {}", request.getCategoryId());
-                        return new RuntimeException("Không tìm thấy danh mục");
-                    });
-        }
+
 
         // Upload thumbnail to Cloudinary
         String thumbnailUrl = null;
@@ -109,7 +100,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .title(request.getTitle())
                 .slug(slug)
                 .content(request.getContent())
-                .category(category)
+
                 .thumbnailUrl(thumbnailUrl)
                 .status(ArticleStatus.DRAFT)
                 .author(author)
@@ -191,14 +182,7 @@ public class ArticleServiceImpl implements ArticleService {
             article.setContent(request.getContent());
         }
 
-        if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy danh mục với ID: {}", request.getCategoryId());
-                        return new RuntimeException("Không tìm thấy danh mục");
-                    });
-            article.setCategory(category);
-        }
+
 
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             String thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());

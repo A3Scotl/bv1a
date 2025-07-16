@@ -1,8 +1,6 @@
 package com.benhvien1a.service.impl;
 
 import com.benhvien1a.dto.ServiceDTO;
-import com.benhvien1a.model.Category;
-import com.benhvien1a.repository.CategoryRepository;
 import com.benhvien1a.repository.ServiceRepository;
 import com.benhvien1a.service.ServiceService;
 import com.benhvien1a.util.SlugUtils;
@@ -20,7 +18,7 @@ public class ServiceServiceImpl implements ServiceService {
     private static final Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
     private final ServiceRepository serviceRepository;
-    private final CategoryRepository categoryRepository;
+
     private final CloudinaryService cloudinaryService;
 
     @Override
@@ -49,14 +47,7 @@ public class ServiceServiceImpl implements ServiceService {
             throw new RuntimeException("Slug đã tồn tại");
         }
 
-        Category category = new Category();
-        if (request.getCategoryId() != null) {
-            category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy danh mục với ID: {}", request.getCategoryId());
-                        return new RuntimeException("Không tìm thấy danh mục");
-                    });
-        }
+
 
         String thumbnailUrl = null;
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
@@ -66,7 +57,7 @@ public class ServiceServiceImpl implements ServiceService {
         com.benhvien1a.model.Service service = com.benhvien1a.model.Service.builder()
                 .name(request.getName())
                 .slug(slug)
-                .category(category)
+
                 .description(request.getDescription())
                 .thumbnail(thumbnailUrl)
                 .isActive(request.isActive())
@@ -111,14 +102,7 @@ public class ServiceServiceImpl implements ServiceService {
         }
 
 
-        Category category = new Category();
-        if (request.getCategoryId() != null) {
-            category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy danh mục với ID: {}", request.getCategoryId());
-                        return new RuntimeException("Không tìm thấy danh mục");
-                    });
-        }
+
 
         String thumbnailUrl = service.getThumbnail(); // giữ lại thumbnail cũ nếu không gửi mới
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
@@ -127,7 +111,7 @@ public class ServiceServiceImpl implements ServiceService {
 
         service.setName(request.getName());
         service.setSlug(newSlug);
-        service.setCategory(category);
+
         service.setDescription(request.getDescription());
         service.setThumbnail(thumbnailUrl);
         service.setActive(request.isActive());

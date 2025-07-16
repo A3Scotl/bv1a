@@ -40,8 +40,7 @@ public class Article {
     @ManyToOne
     private User author;
 
-    @ManyToOne
-    private Category category;
+
 
 
     private LocalDateTime publishAt;

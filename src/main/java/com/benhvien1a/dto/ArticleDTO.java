@@ -23,7 +23,7 @@ public class ArticleDTO {
 
     private String content;
 
-    private Long categoryId;
+
 
     private boolean isActive;
 

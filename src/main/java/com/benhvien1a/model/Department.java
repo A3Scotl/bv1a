@@ -27,10 +27,6 @@ public class Department {
 
     private String thumbnail;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     private LocalDateTime createAt = LocalDateTime.now();
     private LocalDateTime updateAt;
 

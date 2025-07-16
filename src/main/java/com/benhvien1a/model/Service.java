@@ -16,9 +16,6 @@ public class Service {
     private String name;
     @Column(unique = true)
     private String slug;
-    
-    @ManyToOne
-    private Category category;
 
     @Column(columnDefinition = "LONGTEXT")
     private String description;

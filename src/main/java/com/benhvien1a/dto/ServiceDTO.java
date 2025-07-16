@@ -24,7 +24,7 @@ public class ServiceDTO {
 
     private MultipartFile thumbnail;
     private String slug;
-    private Long categoryId;
+
 
     private boolean isActive;
 }

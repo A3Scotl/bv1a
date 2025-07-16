@@ -21,5 +21,5 @@ import java.util.Optional;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     boolean existsBySlug(String slug);
     Optional<Article> findBySlug(String slug);
-    boolean existsByCategoryId(Long categoryId);
+
 }

@@ -20,7 +20,7 @@ public class DepartmentDTO {
     @NotBlank(message = "Tên phòng ban là bắt buộc")
     private String name;
     private String description;
-    private Long categoryId;
+
     private MultipartFile thumbnail;
     private String slug;
     private boolean isActive;
