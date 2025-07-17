@@ -48,10 +48,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // PUBLIC: Các endpoint không cần đăng nhập
-                        .requestMatchers("/api/v1/appointments","/api/v1/auth/login", "/api/v1/auth/forgot-password").permitAll()
+                        .requestMatchers("/api/v1/doctors/public","/api/v1/appointments","/api/v1/auth/login", "/api/v1/auth/forgot-password").permitAll()
                         .requestMatchers( "/api/v1/articles/public").permitAll()
-                        .requestMatchers( "/api/v1/doctors/public").permitAll()
                         .requestMatchers( "/api/v1/departments/public").permitAll()
+                        .requestMatchers( "/api/v1/doctors/by-slug/**").permitAll()
                         // Tất cả GET công khai
                         .requestMatchers(HttpMethod.POST, "/api/v1/appointments").permitAll() // POST đăng ký lịch khám công khai
                         // EDITOR: Quyền truy cập các endpoint liên quan

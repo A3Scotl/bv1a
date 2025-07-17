@@ -25,6 +25,32 @@ public class DoctorController {
 
     private final DoctorService doctorService;
 
+    @GetMapping("/public")
+    public ResponseEntity<ApiResponse<List<Doctor>>> getAllActiveDoctors() {
+        logger.info("Nhận yêu cầu lấy tất cả bác sĩ đang hoạt động");
+        try {
+            List<Doctor> doctors = doctorService.getAllActiveDoctors();
+            return ResponseEntity.ok(new ApiResponse<>(
+                    true,
+                    "Lấy tất cả bác sĩ đang hoạt động thành công",
+                    doctors,
+                    null,
+                    null,
+                    "/api/v1/doctors/public"
+            ));
+        } catch (Exception e) {
+            logger.error("Lấy tất cả bác sĩ đang hoạt động thất bại: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse<>(
+                    false,
+                    "Lấy tất cả bác sĩ đang hoạt động thất bại: " + e.getMessage(),
+                    null,
+                    e.getMessage(),
+                    null,
+                    "/api/v1/doctors/public"
+            ));
+        }
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Doctor>> createDoctor(@Valid @ModelAttribute DoctorDTO request) {
@@ -136,7 +162,6 @@ public class DoctorController {
     }
 
     @GetMapping("/by-slug/{slug}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Doctor>> getDoctorBySlug(@PathVariable String slug) {
         logger.info("Nhận yêu cầu lấy bác sĩ với slug: {}", slug);
         try {

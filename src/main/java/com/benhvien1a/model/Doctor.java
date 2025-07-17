@@ -31,4 +31,7 @@ public class Doctor {
     private LocalDateTime updateAt;
 
     private boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private Position position;
+
 }

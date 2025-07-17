@@ -3,6 +3,7 @@ package com.benhvien1a.service.impl;
 import com.benhvien1a.dto.DoctorDTO;
 import com.benhvien1a.model.Department;
 import com.benhvien1a.model.Doctor;
+import com.benhvien1a.model.Position;
 import com.benhvien1a.repository.DepartmentRepository;
 import com.benhvien1a.repository.DoctorRepository;
 import com.benhvien1a.service.DoctorService;
@@ -68,6 +69,7 @@ public class DoctorServiceImpl implements DoctorService {
                 .department(department)
                 .description(request.getDescription())
                 .avatarUrl(avatarUrl)
+                .position(Position.valueOf(request.getPosition()))
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
                 .isActive(request.isActive())
@@ -126,6 +128,7 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setDescription(request.getDescription());
         doctor.setAvatarUrl(avatarUrl);
         doctor.setUpdateAt(LocalDateTime.now());
+        doctor.setPosition(Position.valueOf(request.getPosition()));
         doctor.setActive(request.isActive());
 
         return doctorRepository.save(doctor);
