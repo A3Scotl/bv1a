@@ -14,4 +14,5 @@ public class DoctorDTO {
     private String slug;
     private Long departmentId;
     private boolean isActive;
+    private String position;
 }
