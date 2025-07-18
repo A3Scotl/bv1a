@@ -279,7 +279,6 @@ public class ArticleController {
     }
 
     @GetMapping("/by-type/{type}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<List<Article>>> getArticlesByType(@PathVariable ArticleType type) {
         logger.info("Nhận yêu cầu lấy tất cả bài viết với loại: {}", type);
         try {
