@@ -148,7 +148,6 @@ public class ArticleController {
     }
 
     @GetMapping("/by-slug/{slug}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Article>> getArticleBySlug(@PathVariable String slug) {
         logger.info("Nhận yêu cầu lấy bài viết với slug: {}", slug);
         try {
@@ -173,7 +172,7 @@ public class ArticleController {
             ));
         }
     }
-    @GetMapping
+    @GetMapping("/public")
     public ResponseEntity<ApiResponse<List<Article>>> getAllActiveArticles() {
         logger.info("Nhận yêu cầu lấy tất cả bài viết");
         try {
