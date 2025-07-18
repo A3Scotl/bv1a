@@ -63,6 +63,11 @@ public class DoctorServiceImpl implements DoctorService {
             avatarUrl = cloudinaryService.uploadFile(request.getAvatarUrl());
         }
 
+        Boolean active = request.getIsActive();
+        if (active == null) {
+            active = true;
+        }
+
         Doctor doctor = Doctor.builder()
                 .fullName(request.getFullName())
                 .slug(slug)
@@ -72,7 +77,7 @@ public class DoctorServiceImpl implements DoctorService {
                 .position(Position.valueOf(request.getPosition()))
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
-                .isActive(request.isActive())
+                .isActive(active)
                 .build();
 
         return doctorRepository.save(doctor);
@@ -122,6 +127,11 @@ public class DoctorServiceImpl implements DoctorService {
                     });
         }
 
+        Boolean active = request.getIsActive();
+        if (active == null) {
+            active = doctor.isActive();
+        }
+
         doctor.setFullName(request.getFullName());
         doctor.setSlug(newSlug);
         doctor.setDepartment(department);
@@ -129,10 +139,9 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setAvatarUrl(avatarUrl);
         doctor.setUpdateAt(LocalDateTime.now());
         doctor.setPosition(Position.valueOf(request.getPosition()));
-        doctor.setActive(request.isActive());
+        doctor.setActive(active);
 
         return doctorRepository.save(doctor);
-
     }
 
     @Override
@@ -184,6 +193,14 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setUpdateAt(LocalDateTime.now());
         doctorRepository.save(doctor);
         logger.info("Đã ẩn bac si với ID: {}", id);
+    }
+
+    @Override
+    public List<String> getAllPositions() {
+        logger.info("Lấy tất cả vị trí của bác sĩ");
+        return List.of(Position.values()).stream()
+                .map(Position::name)
+                .toList();
     }
 
 }

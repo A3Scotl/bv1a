@@ -30,7 +30,8 @@ public class Doctor {
     private LocalDateTime createAt = LocalDateTime.now();
     private LocalDateTime updateAt;
 
-    private boolean isActive;
+    private boolean isActive = true;
+
     @Enumerated(EnumType.STRING)
     private Position position;
 

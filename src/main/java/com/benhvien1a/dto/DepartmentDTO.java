@@ -23,5 +23,5 @@ public class DepartmentDTO {
 
     private MultipartFile thumbnail;
     private String slug;
-    private boolean isActive;
+    private Boolean isActive;
 }
