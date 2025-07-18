@@ -13,6 +13,7 @@ import com.benhvien1a.model.User;
 import com.benhvien1a.repository.ArticleRepository;
 import com.benhvien1a.repository.UserRepository;
 import com.benhvien1a.service.ArticleService;
+import com.benhvien1a.util.SlugUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -41,13 +42,13 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
 
     private final CloudinaryService cloudinaryService;
-    private final UserRepository userRepository;
+
 
     @Override
     public Article createArticle(ArticleDTO request) {
         logger.info("Tạo bài viết với tiêu đề: {}", request.getTitle());
 
-        String slug = generateSlug(request.getTitle());
+        String slug = SlugUtils.generateSlug(request.getTitle());
         if (articleRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
             throw new RuntimeException("Slug đã tồn tại");
@@ -58,35 +59,7 @@ public class ArticleServiceImpl implements ArticleService {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
 
-        String userEmail = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            logger.error("Không có thông tin xác thực trong SecurityContext");
-            throw new RuntimeException("Không thể xác định người dùng: chưa đăng nhập");
-        }
 
-        Object principal = authentication.getPrincipal();
-        logger.debug("Principal type: {}", principal.getClass().getName());
-        logger.debug("Principal content: {}", principal);
-
-        if (principal instanceof Jwt) {
-            Jwt jwt = (Jwt) principal;
-            userEmail = jwt.getClaimAsString("email");
-            logger.debug("JWT claims: {}", jwt.getClaims());
-        } else if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            userEmail = userDetails.getUsername();
-        } else if (principal instanceof String) {
-            userEmail = (String) principal;
-        } else {
-            logger.error("Lỗi xác thực người dùng: {}", principal.getClass().getName());
-            throw new RuntimeException("Không thể xác định người dùng từ token");
-        }
-
-        if (userEmail == null) {
-            logger.error("Không thể lấy email từ principal");
-            throw new RuntimeException("Không thể xác định email người dùng");
-        }
 
         ArticleStatus status = request.getStatus() != null ? request.getStatus() : ArticleStatus.DRAFT;
         LocalDateTime publishAt = null;
@@ -123,7 +96,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         // Update fields only if provided
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
-            String newSlug = generateSlug(request.getTitle());
+            String newSlug = SlugUtils.generateSlug(request.getTitle());
             if (!newSlug.equals(article.getSlug()) && articleRepository.existsBySlug(newSlug)) {
                 logger.warn("Slug đã tồn tại: {}", newSlug);
                 throw new RuntimeException("Slug đã tồn tại");
@@ -218,13 +191,6 @@ public class ArticleServiceImpl implements ArticleService {
         logger.info("Ẩn bài viết thành công: {}", id);
     }
 
-
-
-    private String generateSlug(String title) {
-        return title.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
-    }
 
     @Override
     public List<String> getAllArticleTypes() {
