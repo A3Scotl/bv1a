@@ -6,6 +6,7 @@
 package com.benhvien1a.dto;
 
 import com.benhvien1a.model.ArticleStatus;
+import com.benhvien1a.model.ArticleType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,7 @@ public class ArticleDTO {
 
     private String content;
 
-
+    private ArticleType type;
 
     private boolean isActive;
 

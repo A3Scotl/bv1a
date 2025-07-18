@@ -8,6 +8,7 @@ package com.benhvien1a.service.impl;
 import com.benhvien1a.dto.ArticleDTO;
 import com.benhvien1a.model.Article;
 import com.benhvien1a.model.ArticleStatus;
+import com.benhvien1a.model.ArticleType;
 import com.benhvien1a.model.User;
 import com.benhvien1a.repository.ArticleRepository;
 import com.benhvien1a.repository.UserRepository;
@@ -89,21 +90,14 @@ public class ArticleServiceImpl implements ArticleService {
             throw new RuntimeException("Không thể xác định email người dùng");
         }
 
-        // Fetch the User entity by email
-        User author = userRepository.findByEmail(userEmail);
-        if (author == null) {
-            logger.error("Cannot find user with email: {}", userEmail);
-            throw new RuntimeException("User not found");
-        }
 
         Article article = Article.builder()
                 .title(request.getTitle())
                 .slug(slug)
                 .content(request.getContent())
-
+                .type(request.getType())
                 .thumbnailUrl(thumbnailUrl)
                 .status(ArticleStatus.DRAFT)
-                .author(author)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
                 .isActive(request.isActive())
@@ -122,50 +116,6 @@ public class ArticleServiceImpl implements ArticleService {
                     return new RuntimeException("Không tìm thấy bài viết");
                 });
 
-        // Get the authenticated user's email from the security context
-        String userEmail = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            logger.error("Không có thông tin xác thực trong SecurityContext");
-            throw new RuntimeException("Không thể xác định người dùng: chưa đăng nhập");
-        }
-
-        Object principal = authentication.getPrincipal();
-        logger.debug("Principal type: {}", principal.getClass().getName());
-        logger.debug("Principal content: {}", principal);
-
-        if (principal instanceof Jwt) {
-            Jwt jwt = (Jwt) principal;
-            userEmail = jwt.getClaimAsString("email");
-            logger.debug("JWT claims: {}", jwt.getClaims());
-        } else if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            userEmail = userDetails.getUsername();
-        } else if (principal instanceof String) {
-            userEmail = (String) principal;
-        } else {
-            logger.error("Lỗi xác thực người dùng: {}", principal.getClass().getName());
-            throw new RuntimeException("Không thể xác định người dùng từ token");
-        }
-
-        if (userEmail == null) {
-            logger.error("Không thể lấy email từ principal");
-            throw new RuntimeException("Không thể xác định email người dùng");
-        }
-
-        // Fetch the current user
-        User currentUser = userRepository.findByEmail(userEmail);
-        if (currentUser == null) {
-            logger.error("Cannot find user with email: {}", userEmail);
-            throw new RuntimeException("User not found");
-        }
-
-        // Authorization check: Only the original author or ADMIN can update
-        if (!currentUser.getId().equals(article.getAuthor().getId()) &&
-                !authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            logger.error("Người dùng {} không có quyền cập nhật bài viết của tác giả {}", userEmail, article.getAuthor().getEmail());
-            throw new RuntimeException("Không có quyền cập nhật bài viết");
-        }
 
         // Update fields only if provided
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
@@ -202,7 +152,7 @@ public class ArticleServiceImpl implements ArticleService {
             }
             article.setStatus(request.getStatus());
         }
-
+        article.setTitle(request.getTitle());
         article.setActive(request.isActive());
         article.setUpdateAt(LocalDateTime.now());
 

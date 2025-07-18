@@ -37,9 +37,7 @@ public class Article {
     @Enumerated(EnumType.STRING)
     private ArticleStatus status = ArticleStatus.DRAFT;
 
-    @ManyToOne
-    private User author;
-
+    private ArticleType type;
 
 
 
