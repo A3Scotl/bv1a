@@ -37,9 +37,8 @@ public class Article {
     @Enumerated(EnumType.STRING)
     private ArticleStatus status = ArticleStatus.DRAFT;
 
+    @Enumerated(EnumType.STRING)
     private ArticleType type;
-
-
 
     private LocalDateTime publishAt;
     private LocalDateTime createAt = LocalDateTime.now();

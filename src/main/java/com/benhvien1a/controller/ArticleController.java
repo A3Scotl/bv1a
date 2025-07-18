@@ -8,6 +8,7 @@ package com.benhvien1a.controller;
 import com.benhvien1a.dto.response.ApiResponse;
 import com.benhvien1a.dto.ArticleDTO;
 import com.benhvien1a.model.Article;
+import com.benhvien1a.model.ArticleType;
 import com.benhvien1a.service.ArticleService;
 import com.benhvien1a.service.impl.CloudinaryService;
 import jakarta.validation.Valid;
@@ -226,4 +227,60 @@ public class ArticleController {
             ));
         }
     }
+
+    @GetMapping("/article-types")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    public ResponseEntity<ApiResponse<List<String>>> getAllArticleTypes() {
+        logger.info("Nhận yêu cầu lấy tất cả loại bài viết");
+        try {
+            List<String> articleTypes = articleService.getAllArticleTypes();
+            return ResponseEntity.ok(new ApiResponse<>(
+                    true,
+                    "Lấy danh sách loại bài viết thành công",
+                    articleTypes,
+                    null,
+                    ZonedDateTime.now(ZoneId.of("UTC")),
+                    "/api/v1/articles/article-types"
+            ));
+        } catch (Exception e) {
+            logger.error("Lấy danh sách loại bài viết thất bại: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(
+                    false,
+                    "Lấy danh sách loại bài viết thất bại: " + e.getMessage(),
+                    null,
+                    e.getMessage(),
+                    ZonedDateTime.now(ZoneId.of("UTC")),
+                    "/api/v1/articles/article-types"
+            ));
+        }
+    }
+
+    @GetMapping("/by-type/{type}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    public ResponseEntity<ApiResponse<List<Article>>> getArticlesByType(@PathVariable ArticleType type) {
+        logger.info("Nhận yêu cầu lấy tất cả bài viết với loại: {}", type);
+        try {
+            List<Article> articles = articleService.getArticlesByType(type);
+            return ResponseEntity.ok(new ApiResponse<>(
+                    true,
+                    "Lấy danh sách bài viết theo loại thành công",
+                    articles,
+                    null,
+                    ZonedDateTime.now(ZoneId.of("UTC")),
+                    "/api/v1/articles/by-type/" + type
+            ));
+        } catch (Exception e) {
+            logger.error("Lấy danh sách bài viết theo loại thất bại: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(
+                    false,
+                    "Lấy danh sách bài viết theo loại thất bại: " + e.getMessage(),
+                    null,
+                    e.getMessage(),
+                    ZonedDateTime.now(ZoneId.of("UTC")),
+                    "/api/v1/articles/by-type/" + type
+            ));
+        }
+    }
+
+
 }

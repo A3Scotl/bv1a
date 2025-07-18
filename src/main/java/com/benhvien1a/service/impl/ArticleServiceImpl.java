@@ -23,7 +23,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*
  * @description: Implementation of ArticleService for managing Article entities
@@ -51,15 +53,11 @@ public class ArticleServiceImpl implements ArticleService {
             throw new RuntimeException("Slug đã tồn tại");
         }
 
-
-
-        // Upload thumbnail to Cloudinary
         String thumbnailUrl = null;
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
 
-        // Get the authenticated user's email from the security context
         String userEmail = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -90,6 +88,11 @@ public class ArticleServiceImpl implements ArticleService {
             throw new RuntimeException("Không thể xác định email người dùng");
         }
 
+        ArticleStatus status = request.getStatus() != null ? request.getStatus() : ArticleStatus.DRAFT;
+        LocalDateTime publishAt = null;
+        if (status == ArticleStatus.PUBLISHED) {
+            publishAt = LocalDateTime.now();
+        }
 
         Article article = Article.builder()
                 .title(request.getTitle())
@@ -97,7 +100,8 @@ public class ArticleServiceImpl implements ArticleService {
                 .content(request.getContent())
                 .type(request.getType())
                 .thumbnailUrl(thumbnailUrl)
-                .status(ArticleStatus.DRAFT)
+                .status(status)
+                .publishAt(publishAt)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
                 .isActive(request.isActive())
@@ -214,9 +218,30 @@ public class ArticleServiceImpl implements ArticleService {
         logger.info("Ẩn bài viết thành công: {}", id);
     }
 
+
+
     private String generateSlug(String title) {
         return title.toLowerCase()
                 .replaceAll("[^a-z0-9]+", "-")
                 .replaceAll("^-|-$", "");
     }
+
+    @Override
+    public List<String> getAllArticleTypes() {
+        return Arrays.stream(ArticleType.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Article> getArticlesByType(ArticleType type) {
+        logger.info("Lấy tất cả bài viết với loại: {}", type);
+        List<ArticleType> types = Arrays.asList(ArticleType.values());
+        if (!types.contains(type)) {
+            logger.error("Loại bài viết không hợp lệ: {}", type);
+            throw new RuntimeException("Loại bài viết không hợp lệ");
+        }
+        return articleRepository.findByType(type);
+    }
+
 }

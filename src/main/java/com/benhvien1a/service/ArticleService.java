@@ -7,6 +7,7 @@ package com.benhvien1a.service;
 
 import com.benhvien1a.dto.ArticleDTO;
 import com.benhvien1a.model.Article;
+import com.benhvien1a.model.ArticleType;
 
 import java.util.List;
 
@@ -24,4 +25,7 @@ public interface ArticleService {
     Article getArticleBySlug(String slug);
     List<Article> getAllArticles();
     void hideArticle(Long id);
+
+    List<String> getAllArticleTypes();
+    List<Article> getArticlesByType(ArticleType type);
 }
