@@ -173,7 +173,31 @@ public class ArticleController {
             ));
         }
     }
-
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Article>>> getAllActiveArticles() {
+        logger.info("Nhận yêu cầu lấy tất cả bài viết");
+        try {
+            List<Article> articles = articleService.getAllActiveArticles();
+            return ResponseEntity.ok(new ApiResponse<>(
+                    true,
+                    "Lấy danh sách bài viết thành công",
+                    articles,
+                    null,
+                    ZonedDateTime.now(ZoneId.of("UTC")),
+                    "/api/v1/articles"
+            ));
+        } catch (Exception e) {
+            logger.error("Lấy danh sách bài viết thất bại: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(
+                    false,
+                    "Lấy danh sách bài viết thất bại: " + e.getMessage(),
+                    null,
+                    e.getMessage(),
+                    ZonedDateTime.now(ZoneId.of("UTC")),
+                    "/api/v1/articles"
+            ));
+        }
+    }
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<List<Article>>> getAllArticles() {

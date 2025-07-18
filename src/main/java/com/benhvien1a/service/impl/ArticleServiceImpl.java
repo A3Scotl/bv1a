@@ -6,10 +6,7 @@
 package com.benhvien1a.service.impl;
 
 import com.benhvien1a.dto.ArticleDTO;
-import com.benhvien1a.model.Article;
-import com.benhvien1a.model.ArticleStatus;
-import com.benhvien1a.model.ArticleType;
-import com.benhvien1a.model.User;
+import com.benhvien1a.model.*;
 import com.benhvien1a.repository.ArticleRepository;
 import com.benhvien1a.repository.UserRepository;
 import com.benhvien1a.service.ArticleService;
@@ -27,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /*
  * @description: Implementation of ArticleService for managing Article entities
@@ -77,7 +76,6 @@ public class ArticleServiceImpl implements ArticleService {
                 .publishAt(publishAt)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
-                .isActive(request.isActive())
                 .build();
 
         return articleRepository.save(article);
@@ -130,7 +128,6 @@ public class ArticleServiceImpl implements ArticleService {
             article.setStatus(request.getStatus());
         }
         article.setTitle(request.getTitle());
-        article.setActive(request.isActive());
         article.setUpdateAt(LocalDateTime.now());
 
         return articleRepository.save(article);
@@ -175,28 +172,46 @@ public class ArticleServiceImpl implements ArticleService {
         logger.info("Lấy tất cả bài viết");
         return articleRepository.findAll();
     }
+    @Override
+    public List<Article> getAllActiveArticles() {
+        logger.info("Lấy tất cả bài viết");
+        return articleRepository.findAll().stream()
+                .filter(article -> article.getStatus() == ArticleStatus.PUBLISHED)
+                .toList();
+    }
 
     @Override
     public void hideArticle(Long id) {
-        logger.info("Ẩn bài viết ID: {}", id);
+        logger.info("Ẩn/hiện bài viết ID: {}", id);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Không tìm thấy bài viết với ID: {}", id);
                     return new RuntimeException("Không tìm thấy bài viết");
                 });
 
-        article.setActive(!article.isActive());
+        ArticleStatus currentStatus = article.getStatus();
+        if (currentStatus == ArticleStatus.PUBLISHED) {
+            article.setStatus(ArticleStatus.ARCHIVED); // Ẩn bài viết
+            logger.info("Bài viết chuyển sang ARCHIVED: {}", id);
+        } else if (currentStatus == ArticleStatus.ARCHIVED) {
+            article.setStatus(ArticleStatus.PUBLISHED); // Hiện lại bài viết nếu đang bị ẩn
+            logger.info("Bài viết chuyển sang PUBLISHED: {}", id);
+        } else {
+            logger.warn("Không thể ẩn/hiện bài viết ở trạng thái {}: {}", currentStatus, id);
+            throw new RuntimeException("Trạng thái bài viết không hợp lệ để ẩn/hiện");
+        }
+
         article.setUpdateAt(LocalDateTime.now());
         articleRepository.save(article);
-        logger.info("Ẩn bài viết thành công: {}", id);
     }
+
 
 
     @Override
     public List<String> getAllArticleTypes() {
         return Arrays.stream(ArticleType.values())
                 .map(Enum::name)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Override

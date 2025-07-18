@@ -26,7 +26,6 @@ public class ArticleDTO {
 
     private ArticleType type;
 
-    private boolean isActive;
 
     private MultipartFile thumbnail;
 

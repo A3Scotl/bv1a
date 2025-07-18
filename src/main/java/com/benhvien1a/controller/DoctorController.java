@@ -214,6 +214,7 @@ public class DoctorController {
         }
     }
 
+
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse<Void>> hideDoctor(@PathVariable Long id) {

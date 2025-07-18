@@ -44,5 +44,5 @@ public class Article {
     private LocalDateTime createAt = LocalDateTime.now();
     private LocalDateTime updateAt;
 
-    private boolean isActive ;
+
 }
