@@ -13,6 +13,6 @@ public class DoctorDTO {
     private String description;
     private String slug;
     private Long departmentId;
-    private boolean isActive;
+    private Boolean isActive;
     private String position;
 }

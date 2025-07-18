@@ -26,5 +26,5 @@ public class ServiceDTO {
     private String slug;
 
 
-    private boolean isActive;
+    private Boolean isActive;
 }

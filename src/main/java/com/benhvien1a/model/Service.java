@@ -22,7 +22,7 @@ public class Service {
 
     private String thumbnail;
 
-    private boolean isActive;
+    private boolean isActive = true;
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;

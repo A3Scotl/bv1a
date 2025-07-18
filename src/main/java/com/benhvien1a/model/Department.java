@@ -30,5 +30,5 @@ public class Department {
     private LocalDateTime createAt = LocalDateTime.now();
     private LocalDateTime updateAt;
 
-    private boolean isActive;
+    private boolean isActive = true;
 }

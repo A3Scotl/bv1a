@@ -50,15 +50,19 @@ public class DepartmentServiceImpl implements DepartmentService {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
 
+        Boolean active = request.getIsActive();
+        if (active == null) {
+            active = true; // Mặc định là hoạt động nếu không được chỉ định
+        }
+
         Department department = Department.builder()
                 .name(request.getName())
                 .slug(slug)
-
                 .description(request.getDescription())
                 .thumbnail(thumbnailUrl)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
-                .isActive(request.isActive())
+                .isActive(active)
                 .build();
 
         return departmentRepository.save(department);
@@ -101,6 +105,10 @@ public class DepartmentServiceImpl implements DepartmentService {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
 
+        Boolean active = request.getIsActive();
+        if(active == null) {
+            active = department.isActive();
+        }
 
         department.setName(request.getName());
         department.setSlug(newSlug);
@@ -108,7 +116,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         department.setDescription(request.getDescription());
         department.setThumbnail(thumbnailUrl);
         department.setUpdateAt(LocalDateTime.now());
-        department.setActive(request.isActive());
+        department.setActive(active);
 
         return departmentRepository.save(department);
     }

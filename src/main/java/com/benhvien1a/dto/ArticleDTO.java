@@ -26,7 +26,6 @@ public class ArticleDTO {
 
     private ArticleType type;
 
-
     private MultipartFile thumbnail;
 
     private ArticleStatus status;

@@ -48,11 +48,12 @@ public class ServiceServiceImpl implements ServiceService {
         }
 
 
-
         String thumbnailUrl = null;
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
+
+        Boolean active = request.getIsActive();
 
         com.benhvien1a.model.Service service = com.benhvien1a.model.Service.builder()
                 .name(request.getName())
@@ -60,7 +61,7 @@ public class ServiceServiceImpl implements ServiceService {
 
                 .description(request.getDescription())
                 .thumbnail(thumbnailUrl)
-                .isActive(request.isActive())
+                .isActive(active)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -102,11 +103,14 @@ public class ServiceServiceImpl implements ServiceService {
         }
 
 
-
-
         String thumbnailUrl = service.getThumbnail(); // giữ lại thumbnail cũ nếu không gửi mới
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
+        }
+
+        Boolean active = request.getIsActive();
+        if( active == null) {
+            active = service.isActive();
         }
 
         service.setName(request.getName());
@@ -114,7 +118,7 @@ public class ServiceServiceImpl implements ServiceService {
 
         service.setDescription(request.getDescription());
         service.setThumbnail(thumbnailUrl);
-        service.setActive(request.isActive());
+        service.setActive(active);
         service.setUpdatedAt(LocalDateTime.now());
 
         serviceRepository.save(service);

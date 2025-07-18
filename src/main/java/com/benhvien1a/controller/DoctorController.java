@@ -241,4 +241,31 @@ public class DoctorController {
             ));
         }
     }
+
+    @GetMapping("/positions")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    public ResponseEntity<ApiResponse<List<String>>> getAllPositions() {
+        logger.info("Nhận yêu cầu lấy tất cả vị trí của bác sĩ");
+        try {
+            List<String> positions = doctorService.getAllPositions();
+            return ResponseEntity.ok(new ApiResponse<>(
+                    true,
+                    "Lấy tất cả vị trí bác sĩ thành công",
+                    positions,
+                    null,
+                    null,
+                    "/api/v1/doctors/positions"
+            ));
+        } catch (Exception e) {
+            logger.error("Lấy tất cả vị trí bác sĩ thất bại: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse<>(
+                    false,
+                    "Lấy tất cả vị trí bác sĩ thất bại: " + e.getMessage(),
+                    null,
+                    e.getMessage(),
+                    null,
+                    "/api/v1/doctors/positions"
+            ));
+        }
+    }
 }
