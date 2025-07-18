@@ -37,15 +37,12 @@ public class Article {
     @Enumerated(EnumType.STRING)
     private ArticleStatus status = ArticleStatus.DRAFT;
 
-    @ManyToOne
-    private User author;
-
-
-
+    @Enumerated(EnumType.STRING)
+    private ArticleType type;
 
     private LocalDateTime publishAt;
     private LocalDateTime createAt = LocalDateTime.now();
     private LocalDateTime updateAt;
 
-    private boolean isActive ;
+
 }

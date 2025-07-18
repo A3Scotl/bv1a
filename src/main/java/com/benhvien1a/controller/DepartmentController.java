@@ -147,7 +147,6 @@ public class DepartmentController {
     }
 
     @GetMapping("/by-slug/{slug}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Department>> getDepartmentBySlug(@PathVariable String slug) {
         logger.info("Nhận yêu cầu lấy phòng ban với slug: {}", slug);
         try {

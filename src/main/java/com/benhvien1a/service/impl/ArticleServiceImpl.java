@@ -6,12 +6,11 @@
 package com.benhvien1a.service.impl;
 
 import com.benhvien1a.dto.ArticleDTO;
-import com.benhvien1a.model.Article;
-import com.benhvien1a.model.ArticleStatus;
-import com.benhvien1a.model.User;
+import com.benhvien1a.model.*;
 import com.benhvien1a.repository.ArticleRepository;
 import com.benhvien1a.repository.UserRepository;
 import com.benhvien1a.service.ArticleService;
+import com.benhvien1a.util.SlugUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,7 +21,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /*
  * @description: Implementation of ArticleService for managing Article entities
@@ -38,75 +41,41 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
 
     private final CloudinaryService cloudinaryService;
-    private final UserRepository userRepository;
+
 
     @Override
     public Article createArticle(ArticleDTO request) {
         logger.info("Tạo bài viết với tiêu đề: {}", request.getTitle());
 
-        String slug = generateSlug(request.getTitle());
+        String slug = SlugUtils.generateSlug(request.getTitle());
         if (articleRepository.existsBySlug(slug)) {
             logger.warn("Slug đã tồn tại: {}", slug);
             throw new RuntimeException("Slug đã tồn tại");
         }
 
-
-
-        // Upload thumbnail to Cloudinary
         String thumbnailUrl = null;
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
         }
 
-        // Get the authenticated user's email from the security context
-        String userEmail = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            logger.error("Không có thông tin xác thực trong SecurityContext");
-            throw new RuntimeException("Không thể xác định người dùng: chưa đăng nhập");
-        }
 
-        Object principal = authentication.getPrincipal();
-        logger.debug("Principal type: {}", principal.getClass().getName());
-        logger.debug("Principal content: {}", principal);
 
-        if (principal instanceof Jwt) {
-            Jwt jwt = (Jwt) principal;
-            userEmail = jwt.getClaimAsString("email");
-            logger.debug("JWT claims: {}", jwt.getClaims());
-        } else if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            userEmail = userDetails.getUsername();
-        } else if (principal instanceof String) {
-            userEmail = (String) principal;
-        } else {
-            logger.error("Lỗi xác thực người dùng: {}", principal.getClass().getName());
-            throw new RuntimeException("Không thể xác định người dùng từ token");
-        }
-
-        if (userEmail == null) {
-            logger.error("Không thể lấy email từ principal");
-            throw new RuntimeException("Không thể xác định email người dùng");
-        }
-
-        // Fetch the User entity by email
-        User author = userRepository.findByEmail(userEmail);
-        if (author == null) {
-            logger.error("Cannot find user with email: {}", userEmail);
-            throw new RuntimeException("User not found");
+        ArticleStatus status = request.getStatus() != null ? request.getStatus() : ArticleStatus.DRAFT;
+        LocalDateTime publishAt = null;
+        if (status == ArticleStatus.PUBLISHED) {
+            publishAt = LocalDateTime.now();
         }
 
         Article article = Article.builder()
                 .title(request.getTitle())
                 .slug(slug)
                 .content(request.getContent())
-
+                .type(request.getType())
                 .thumbnailUrl(thumbnailUrl)
-                .status(ArticleStatus.DRAFT)
-                .author(author)
+                .status(status)
+                .publishAt(publishAt)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
-                .isActive(request.isActive())
                 .build();
 
         return articleRepository.save(article);
@@ -122,54 +91,10 @@ public class ArticleServiceImpl implements ArticleService {
                     return new RuntimeException("Không tìm thấy bài viết");
                 });
 
-        // Get the authenticated user's email from the security context
-        String userEmail = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            logger.error("Không có thông tin xác thực trong SecurityContext");
-            throw new RuntimeException("Không thể xác định người dùng: chưa đăng nhập");
-        }
-
-        Object principal = authentication.getPrincipal();
-        logger.debug("Principal type: {}", principal.getClass().getName());
-        logger.debug("Principal content: {}", principal);
-
-        if (principal instanceof Jwt) {
-            Jwt jwt = (Jwt) principal;
-            userEmail = jwt.getClaimAsString("email");
-            logger.debug("JWT claims: {}", jwt.getClaims());
-        } else if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            userEmail = userDetails.getUsername();
-        } else if (principal instanceof String) {
-            userEmail = (String) principal;
-        } else {
-            logger.error("Lỗi xác thực người dùng: {}", principal.getClass().getName());
-            throw new RuntimeException("Không thể xác định người dùng từ token");
-        }
-
-        if (userEmail == null) {
-            logger.error("Không thể lấy email từ principal");
-            throw new RuntimeException("Không thể xác định email người dùng");
-        }
-
-        // Fetch the current user
-        User currentUser = userRepository.findByEmail(userEmail);
-        if (currentUser == null) {
-            logger.error("Cannot find user with email: {}", userEmail);
-            throw new RuntimeException("User not found");
-        }
-
-        // Authorization check: Only the original author or ADMIN can update
-        if (!currentUser.getId().equals(article.getAuthor().getId()) &&
-                !authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            logger.error("Người dùng {} không có quyền cập nhật bài viết của tác giả {}", userEmail, article.getAuthor().getEmail());
-            throw new RuntimeException("Không có quyền cập nhật bài viết");
-        }
 
         // Update fields only if provided
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
-            String newSlug = generateSlug(request.getTitle());
+            String newSlug = SlugUtils.generateSlug(request.getTitle());
             if (!newSlug.equals(article.getSlug()) && articleRepository.existsBySlug(newSlug)) {
                 logger.warn("Slug đã tồn tại: {}", newSlug);
                 throw new RuntimeException("Slug đã tồn tại");
@@ -202,8 +127,7 @@ public class ArticleServiceImpl implements ArticleService {
             }
             article.setStatus(request.getStatus());
         }
-
-        article.setActive(request.isActive());
+        article.setTitle(request.getTitle());
         article.setUpdateAt(LocalDateTime.now());
 
         return articleRepository.save(article);
@@ -248,25 +172,57 @@ public class ArticleServiceImpl implements ArticleService {
         logger.info("Lấy tất cả bài viết");
         return articleRepository.findAll();
     }
+    @Override
+    public List<Article> getAllActiveArticles() {
+        logger.info("Lấy tất cả bài viết");
+        return articleRepository.findAll().stream()
+                .filter(article -> article.getStatus() == ArticleStatus.PUBLISHED)
+                .toList();
+    }
 
     @Override
     public void hideArticle(Long id) {
-        logger.info("Ẩn bài viết ID: {}", id);
+        logger.info("Ẩn/hiện bài viết ID: {}", id);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Không tìm thấy bài viết với ID: {}", id);
                     return new RuntimeException("Không tìm thấy bài viết");
                 });
 
-        article.setActive(!article.isActive());
+        ArticleStatus currentStatus = article.getStatus();
+        if (currentStatus == ArticleStatus.PUBLISHED) {
+            article.setStatus(ArticleStatus.ARCHIVED); // Ẩn bài viết
+            logger.info("Bài viết chuyển sang ARCHIVED: {}", id);
+        } else if (currentStatus == ArticleStatus.ARCHIVED) {
+            article.setStatus(ArticleStatus.PUBLISHED); // Hiện lại bài viết nếu đang bị ẩn
+            logger.info("Bài viết chuyển sang PUBLISHED: {}", id);
+        } else {
+            logger.warn("Không thể ẩn/hiện bài viết ở trạng thái {}: {}", currentStatus, id);
+            throw new RuntimeException("Trạng thái bài viết không hợp lệ để ẩn/hiện");
+        }
+
         article.setUpdateAt(LocalDateTime.now());
         articleRepository.save(article);
-        logger.info("Ẩn bài viết thành công: {}", id);
     }
 
-    private String generateSlug(String title) {
-        return title.toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-|-$", "");
+
+
+    @Override
+    public List<String> getAllArticleTypes() {
+        return Arrays.stream(ArticleType.values())
+                .map(Enum::name)
+                .collect(toList());
     }
+
+    @Override
+    public List<Article> getArticlesByType(ArticleType type) {
+        logger.info("Lấy tất cả bài viết với loại: {}", type);
+        List<ArticleType> types = Arrays.asList(ArticleType.values());
+        if (!types.contains(type)) {
+            logger.error("Loại bài viết không hợp lệ: {}", type);
+            throw new RuntimeException("Loại bài viết không hợp lệ");
+        }
+        return articleRepository.findByType(type);
+    }
+
 }
