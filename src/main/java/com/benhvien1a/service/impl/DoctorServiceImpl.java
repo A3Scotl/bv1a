@@ -16,12 +16,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @RequiredArgsConstructor
 public class DoctorServiceImpl implements DoctorService {
-    private static final Logger logger = LoggerFactory.getLogger(DepartmentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DoctorServiceImpl.class);
 
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
@@ -29,9 +27,10 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<Doctor> getAllDoctors() {
-        logger.info("Lấy tất cả bac si");
+        logger.info("Lấy tất cả bác sĩ");
         return doctorRepository.findAll();
     }
+
     @Override
     public List<Doctor> getDotorsByDepartmentSlug(String departmentSlug) {
         logger.info("Lấy tất cả bác sĩ theo phòng ban slug: {}", departmentSlug);
@@ -39,16 +38,13 @@ public class DoctorServiceImpl implements DoctorService {
                 .filter(doctor ->
                         doctor.getDepartment() != null &&
                                 departmentSlug.equals(doctor.getDepartment().getSlug()) &&
-                                Boolean.TRUE.equals(doctor.isActive())
-                )
+                                Boolean.TRUE.equals(doctor.isActive()))
                 .toList();
     }
 
-
-
     @Override
     public List<Doctor> getAllActiveDoctors() {
-        logger.info("Lấy tất cả bac si đang hoạt động");
+        logger.info("Lấy tất cả bác sĩ đang hoạt động");
         return doctorRepository.findAll().stream()
                 .filter(Doctor::isActive)
                 .toList();
@@ -56,7 +52,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor creaeDoctor(DoctorDTO request) {
-        logger.info("Tạo bac si với tên: {}", request.getFullName());
+        logger.info("Tạo bác sĩ với tên: {}", request.getFullName());
 
         String slug = SlugUtils.generateSlug(request.getFullName());
         if (doctorRepository.existsBySlug(slug)) {
@@ -74,8 +70,10 @@ public class DoctorServiceImpl implements DoctorService {
         }
 
         String avatarUrl = null;
-        if (request.getAvatarUrl() != null && !request.getAvatarUrl().isEmpty()) {
-            avatarUrl = cloudinaryService.uploadFile(request.getAvatarUrl());
+        if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+            avatarUrl = cloudinaryService.uploadFile(request.getAvatarFile());
+        } else if (request.getAvatarUrl() != null && !request.getAvatarUrl().isBlank()) {
+            avatarUrl = request.getAvatarUrl();
         }
 
         Boolean active = request.getIsActive();
@@ -100,31 +98,20 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor updateDoctor(Long id, DoctorDTO request) {
-        logger.info("Cập nhật bac si với ID: {}", id);
-
-        String avatarUrl = null;
-        if (request.getAvatarUrl() != null && !request.getAvatarUrl().isEmpty()) {
-            avatarUrl = cloudinaryService.uploadFile(request.getAvatarUrl());
-        }
+        logger.info("Cập nhật bác sĩ với ID: {}", id);
 
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bac si với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bac si");
+                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
+                    return new RuntimeException("Không tìm thấy bác sĩ");
                 });
 
         String newSlug;
-
-        // Nếu người dùng sửa slug khác với slug hiện tại → dùng slug mới
         if (request.getSlug() != null && !request.getSlug().isBlank() && !request.getSlug().equals(doctor.getSlug())) {
             newSlug = request.getSlug();
-        }
-        // Nếu slug không đổi nhưng name thay đổi → generate slug từ name
-        else if (!request.getFullName().equals(doctor.getFullName())) {
+        } else if (request.getFullName() != null && !request.getFullName().equals(doctor.getFullName())) {
             newSlug = SlugUtils.generateSlug(request.getFullName());
-        }
-        // Không đổi gì → giữ nguyên slug cũ
-        else {
+        } else {
             newSlug = doctor.getSlug();
         }
 
@@ -142,18 +129,33 @@ public class DoctorServiceImpl implements DoctorService {
                     });
         }
 
+        String avatarUrl = doctor.getAvatarUrl(); // Preserve existing avatarUrl by default
+        if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
+            avatarUrl = cloudinaryService.uploadFile(request.getAvatarFile());
+        } else if (request.getAvatarUrl() != null && !request.getAvatarUrl().isBlank()) {
+            avatarUrl = request.getAvatarUrl();
+        }
+
         Boolean active = request.getIsActive();
         if (active == null) {
             active = doctor.isActive();
         }
 
-        doctor.setFullName(request.getFullName());
+        if (request.getFullName() != null) {
+            doctor.setFullName(request.getFullName());
+        }
         doctor.setSlug(newSlug);
-        doctor.setDepartment(department);
-        doctor.setDescription(request.getDescription());
+        if (department != null) {
+            doctor.setDepartment(department);
+        }
+        if (request.getDescription() != null) {
+            doctor.setDescription(request.getDescription());
+        }
         doctor.setAvatarUrl(avatarUrl);
         doctor.setUpdateAt(LocalDateTime.now());
-        doctor.setPosition(Position.valueOf(request.getPosition()));
+        if (request.getPosition() != null) {
+            doctor.setPosition(Position.valueOf(request.getPosition()));
+        }
         doctor.setActive(active);
 
         return doctorRepository.save(doctor);
@@ -161,53 +163,53 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public void deleteDoctor(Long id) {
-        logger.info("Xóa bac si với ID: {}", id);
+        logger.info("Xóa bác sĩ với ID: {}", id);
 
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bac si với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bac si");
+                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
+                    return new RuntimeException("Không tìm thấy bác sĩ");
                 });
 
         doctorRepository.delete(doctor);
-        logger.info("Đã xóa bac si với ID: {}", id);
+        logger.info("Đã xóa bác sĩ với ID: {}", id);
     }
 
     @Override
     public Doctor getDoctorById(Long id) {
-        logger.info("Lấy bac si với ID: {}", id);
+        logger.info("Lấy bác sĩ với ID: {}", id);
 
         return doctorRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bac si với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bac si");
+                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
+                    return new RuntimeException("Không tìm thấy bác sĩ");
                 });
     }
 
     @Override
     public Doctor getDoctorBySlug(String slug) {
-        logger.info("Lấy bac si với slug: {}", slug);
+        logger.info("Lấy bác sĩ với slug: {}", slug);
 
         return doctorRepository.findBySlug(slug)
                 .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bac si với slug: {}", slug);
-                    return new RuntimeException("Không tìm thấy bac si");
+                    logger.error("Không tìm thấy bác sĩ với slug: {}", slug);
+                    return new RuntimeException("Không tìm thấy bác sĩ");
                 });
     }
 
     @Override
     public void hideDoctor(Long id) {
-        logger.info("Ẩn bac si với ID: {}", id);
+        logger.info("Ẩn bác sĩ với ID: {}", id);
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bac si với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bac si");
+                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
+                    return new RuntimeException("Không tìm thấy bác sĩ");
                 });
 
         doctor.setActive(!doctor.isActive());
         doctor.setUpdateAt(LocalDateTime.now());
         doctorRepository.save(doctor);
-        logger.info("Đã ẩn bac si với ID: {}", id);
+        logger.info("Đã ẩn bác sĩ với ID: {}", id);
     }
 
     @Override
@@ -217,5 +219,4 @@ public class DoctorServiceImpl implements DoctorService {
                 .map(Position::name)
                 .toList();
     }
-
 }

@@ -7,12 +7,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class DoctorDTO {
-    @NotBlank(message = "Ten la bat buoc")
     private String fullName;
-    private MultipartFile avatarUrl;
     private String description;
-    private String slug;
     private Long departmentId;
-    private Boolean isActive;
     private String position;
+    private Boolean isActive;
+    private MultipartFile avatarFile;
+    private String avatarUrl;
+    private String slug;
+
 }
