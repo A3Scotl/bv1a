@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers( "/api/v1/articles/public").permitAll()
                         .requestMatchers( "/api/v1/departments/public").permitAll()
                         .requestMatchers( "/api/v1/doctors/by-slug/**").permitAll()
+                        .requestMatchers( "/api/v1/doctors/public/**").permitAll()
                         .requestMatchers( "/api/v1/departments/by-slug/**").permitAll()
                         .requestMatchers( "/api/v1/articles/by-slug/**").permitAll()
                         .requestMatchers( "/api/v1/articles/by-type/**").permitAll()

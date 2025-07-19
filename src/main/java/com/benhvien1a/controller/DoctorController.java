@@ -50,6 +50,32 @@ public class DoctorController {
             ));
         }
     }
+    @GetMapping("/public/{departmentSlug}")
+    public ResponseEntity<ApiResponse<List<Doctor>>> getDoctorsByDepartmentSlug(@PathVariable String departmentSlug) {
+        logger.info("Nhận yêu cầu lấy tất cả bác sĩ đang hoạt động của phòng ban ID: {}", departmentSlug);
+        try {
+            List<Doctor> doctors = doctorService.getDotorsByDepartmentSlug(departmentSlug);
+            return ResponseEntity.ok(new ApiResponse<>(
+                    true,
+                    "Lấy tất cả bác sĩ đang hoạt động thành công",
+                    doctors,
+                    null,
+                    null,
+                    "/api/v1/doctors/public/" + departmentSlug
+            ));
+        } catch (Exception e) {
+            logger.error("Lấy tất cả bác sĩ đang hoạt động thất bại: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse<>(
+                    false,
+                    "Lấy tất cả bác sĩ đang hoạt động thất bại: " + e.getMessage(),
+                    null,
+                    e.getMessage(),
+                    null,
+                    "/api/v1/doctors/public/" + departmentSlug
+            ));
+        }
+    }
+
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")

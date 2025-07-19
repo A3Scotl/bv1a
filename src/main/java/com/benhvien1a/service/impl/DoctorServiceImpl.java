@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @RequiredArgsConstructor
 public class DoctorServiceImpl implements DoctorService {
@@ -30,6 +32,19 @@ public class DoctorServiceImpl implements DoctorService {
         logger.info("Lấy tất cả bac si");
         return doctorRepository.findAll();
     }
+    @Override
+    public List<Doctor> getDotorsByDepartmentSlug(String departmentSlug) {
+        logger.info("Lấy tất cả bác sĩ theo phòng ban slug: {}", departmentSlug);
+        return doctorRepository.findAll().stream()
+                .filter(doctor ->
+                        doctor.getDepartment() != null &&
+                                departmentSlug.equals(doctor.getDepartment().getSlug()) &&
+                                Boolean.TRUE.equals(doctor.isActive())
+                )
+                .toList();
+    }
+
+
 
     @Override
     public List<Doctor> getAllActiveDoctors() {

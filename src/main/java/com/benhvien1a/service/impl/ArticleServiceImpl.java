@@ -70,7 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .title(request.getTitle())
                 .slug(slug)
                 .content(request.getContent())
-                .type(request.getType())
+                .type(ArticleType.valueOf(request.getType()))
                 .thumbnailUrl(thumbnailUrl)
                 .status(status)
                 .publishAt(publishAt)
@@ -91,7 +91,6 @@ public class ArticleServiceImpl implements ArticleService {
                     return new RuntimeException("Không tìm thấy bài viết");
                 });
 
-
         // Update fields only if provided
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
             String newSlug = SlugUtils.generateSlug(request.getTitle());
@@ -107,32 +106,36 @@ public class ArticleServiceImpl implements ArticleService {
             article.setContent(request.getContent());
         }
 
-
-
         if (request.getThumbnail() != null && !request.getThumbnail().isEmpty()) {
             String thumbnailUrl = cloudinaryService.uploadFile(request.getThumbnail());
             article.setThumbnailUrl(thumbnailUrl);
         }
 
-        if (request.getStatus() != null) {
-            article.setStatus(request.getStatus());
+        // Update type if provided
+        if (request.getType() != null) {
+            try {
+                ArticleType.valueOf(request.getType());
+                article.setType(ArticleType.valueOf(request.getType()));
+            } catch (IllegalArgumentException e) {
+                logger.warn("Loại bài viết không hợp lệ: {}", request.getType());
+                throw new RuntimeException("Loại bài viết không hợp lệ: " + request.getType());
+            }
         }
 
         // Update status and publishAt
         if (request.getStatus() != null) {
+            article.setStatus(request.getStatus());
             if (request.getStatus() == ArticleStatus.PUBLISHED && article.getPublishAt() == null) {
                 article.setPublishAt(LocalDateTime.now());
             } else if (request.getStatus() != ArticleStatus.PUBLISHED && article.getStatus() == ArticleStatus.PUBLISHED) {
                 article.setPublishAt(null);
             }
-            article.setStatus(request.getStatus());
         }
-        article.setTitle(request.getTitle());
+
         article.setUpdateAt(LocalDateTime.now());
 
         return articleRepository.save(article);
     }
-
     @Override
     public void deleteArticle(Long id) {
         logger.info("Xóa bài viết ID: {}", id);

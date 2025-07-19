@@ -15,6 +15,6 @@ public interface DoctorService {
     Doctor getDoctorById(Long id);
     Doctor getDoctorBySlug(String slug);
     void hideDoctor(Long id);
-
+    List<Doctor> getDotorsByDepartmentSlug(String departmnetSlug);
     List<String> getAllPositions();
 }
