@@ -23,8 +23,8 @@ public class ArticleDTO {
     private String title;
 
     private String content;
-
-    private ArticleType type;
+    @NotBlank(message = "The là bắt buộc")
+    private String type;
 
     private MultipartFile thumbnail;
 
