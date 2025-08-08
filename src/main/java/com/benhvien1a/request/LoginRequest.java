@@ -1,4 +1,4 @@
-package com.benhvien1a.dto.auth;
+package com.benhvien1a.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -6,8 +6,11 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ForgotPasswordRequest {
+public class LoginRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
 }

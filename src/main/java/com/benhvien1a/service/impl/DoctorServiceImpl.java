@@ -11,7 +11,10 @@ import com.benhvien1a.util.SlugUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,66 +23,71 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoctorServiceImpl implements DoctorService {
     private static final Logger logger = LoggerFactory.getLogger(DoctorServiceImpl.class);
-
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
     private final CloudinaryService cloudinaryService;
 
     @Override
-    public List<Doctor> getAllDoctors() {
-        logger.info("Lấy tất cả bác sĩ");
-        return doctorRepository.findAll();
+    @Transactional(readOnly = true)
+    public Page<Doctor> getAllDoctors(Pageable pageable) {
+        logger.info("Fetching all doctors with pagination");
+        return doctorRepository.findAll(pageable);
     }
 
     @Override
-    public List<Doctor> getDotorsByDepartmentSlug(String departmentSlug) {
-        logger.info("Lấy tất cả bác sĩ theo phòng ban slug: {}", departmentSlug);
-        return doctorRepository.findAll().stream()
-                .filter(doctor ->
-                        doctor.getDepartment() != null &&
-                                departmentSlug.equals(doctor.getDepartment().getSlug()) &&
-                                Boolean.TRUE.equals(doctor.isActive()))
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<Doctor> getAllActiveDoctors(Pageable pageable) {
+        logger.info("Fetching all active doctors with pagination");
+        return doctorRepository.findByIsActiveTrue(pageable);
     }
 
     @Override
-    public List<Doctor> getAllActiveDoctors() {
-        logger.info("Lấy tất cả bác sĩ đang hoạt động");
-        return doctorRepository.findAll().stream()
-                .filter(Doctor::isActive)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<Doctor> getFilteredDoctors(String fullName, Boolean isActive, Pageable pageable) {
+        logger.info("Fetching doctors with fullName: {} and isActive: {}", fullName, isActive);
+        return doctorRepository.findByFullNameAndIsActive(fullName, isActive, pageable);
     }
 
     @Override
-    public Doctor creaeDoctor(DoctorDTO request) {
-        logger.info("Tạo bác sĩ với tên: {}", request.getFullName());
+    @Transactional(readOnly = true)
+    public Page<Doctor> getDoctorsByDepartmentSlug(String departmentSlug, Pageable pageable) {
+        logger.info("Fetching doctors by department slug: {}", departmentSlug);
+        return doctorRepository.findByDepartmentSlug(departmentSlug, pageable);
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Doctor getDoctorById(Long id) {
+        logger.info("Fetching doctor with ID: {}", id);
+        return doctorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Doctor getDoctorBySlug(String slug) {
+        logger.info("Fetching doctor with slug: {}", slug);
+        return doctorRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Doctor not found with slug: " + slug));
+    }
+
+    @Override
+    @Transactional
+    public Doctor createDoctor(DoctorDTO request) {
+        logger.info("Creating doctor with name: {}", request.getFullName());
         String slug = SlugUtils.generateSlug(request.getFullName());
         if (doctorRepository.existsBySlug(slug)) {
-            logger.warn("Slug đã tồn tại: {}", slug);
-            throw new RuntimeException("Slug đã tồn tại");
+            throw new RuntimeException("Slug already exists: " + slug);
         }
 
-        Department department = new Department();
-        if (request.getDepartmentId() != null) {
-            department = departmentRepository.findById(request.getDepartmentId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy phòng ban với ID: {}", request.getDepartmentId());
-                        return new RuntimeException("Không tìm thấy phòng ban");
-                    });
-        }
+        Department department = request.getDepartmentId() != null
+                ? departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found with ID: " + request.getDepartmentId()))
+                : null;
 
-        String avatarUrl = null;
-        if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
-            avatarUrl = cloudinaryService.uploadFile(request.getAvatarFile());
-        } else if (request.getAvatarUrl() != null && !request.getAvatarUrl().isBlank()) {
-            avatarUrl = request.getAvatarUrl();
-        }
-
-        Boolean active = request.getIsActive();
-        if (active == null) {
-            active = true;
-        }
+        String avatarUrl = request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()
+                ? cloudinaryService.uploadFile(request.getAvatarFile())
+                : request.getAvatarUrl();
 
         Doctor doctor = Doctor.builder()
                 .fullName(request.getFullName())
@@ -87,134 +95,73 @@ public class DoctorServiceImpl implements DoctorService {
                 .department(department)
                 .description(request.getDescription())
                 .avatarUrl(avatarUrl)
-                .position(Position.valueOf(request.getPosition()))
+                .position(request.getPosition() != null ? Position.valueOf(request.getPosition()) : null)
+                .isActive(request.getIsActive() != null ? request.getIsActive() : true)
                 .createAt(LocalDateTime.now())
                 .updateAt(LocalDateTime.now())
-                .isActive(active)
                 .build();
 
         return doctorRepository.save(doctor);
     }
 
     @Override
+    @Transactional
     public Doctor updateDoctor(Long id, DoctorDTO request) {
-        logger.info("Cập nhật bác sĩ với ID: {}", id);
+        logger.info("Updating doctor with ID: {}", id);
+        Doctor doctor = getDoctorById(id);
 
-        Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bác sĩ");
-                });
-
-        String newSlug;
-        if (request.getSlug() != null && !request.getSlug().isBlank() && !request.getSlug().equals(doctor.getSlug())) {
-            newSlug = request.getSlug();
-        } else if (request.getFullName() != null && !request.getFullName().equals(doctor.getFullName())) {
-            newSlug = SlugUtils.generateSlug(request.getFullName());
-        } else {
-            newSlug = doctor.getSlug();
-        }
+        String newSlug = request.getSlug() != null && !request.getSlug().isBlank() ? request.getSlug()
+                : request.getFullName() != null && !request.getFullName().equals(doctor.getFullName())
+                ? SlugUtils.generateSlug(request.getFullName())
+                : doctor.getSlug();
 
         if (!doctor.getSlug().equals(newSlug) && doctorRepository.existsBySlug(newSlug)) {
-            logger.warn("Slug đã tồn tại: {}", newSlug);
-            throw new RuntimeException("Slug đã tồn tại");
+            throw new RuntimeException("Slug already exists: " + newSlug);
         }
 
-        Department department = null;
-        if (request.getDepartmentId() != null) {
-            department = departmentRepository.findById(request.getDepartmentId())
-                    .orElseThrow(() -> {
-                        logger.error("Không tìm thấy phòng ban với ID: {}", request.getDepartmentId());
-                        return new RuntimeException("Không tìm thấy phòng ban");
-                    });
-        }
+        Department department = request.getDepartmentId() != null
+                ? departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found with ID: " + request.getDepartmentId()))
+                : doctor.getDepartment();
 
-        String avatarUrl = doctor.getAvatarUrl(); // Preserve existing avatarUrl by default
-        if (request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()) {
-            avatarUrl = cloudinaryService.uploadFile(request.getAvatarFile());
-        } else if (request.getAvatarUrl() != null && !request.getAvatarUrl().isBlank()) {
-            avatarUrl = request.getAvatarUrl();
-        }
+        String avatarUrl = request.getAvatarFile() != null && !request.getAvatarFile().isEmpty()
+                ? cloudinaryService.uploadFile(request.getAvatarFile())
+                : request.getAvatarUrl() != null ? request.getAvatarUrl() : doctor.getAvatarUrl();
 
-        Boolean active = request.getIsActive();
-        if (active == null) {
-            active = doctor.isActive();
-        }
-
-        if (request.getFullName() != null) {
-            doctor.setFullName(request.getFullName());
-        }
+        doctor.setFullName(request.getFullName() != null ? request.getFullName() : doctor.getFullName());
         doctor.setSlug(newSlug);
-        if (department != null) {
-            doctor.setDepartment(department);
-        }
-        if (request.getDescription() != null) {
-            doctor.setDescription(request.getDescription());
-        }
+        doctor.setDepartment(department);
+        doctor.setDescription(request.getDescription() != null ? request.getDescription() : doctor.getDescription());
         doctor.setAvatarUrl(avatarUrl);
+        doctor.setPosition(request.getPosition() != null ? Position.valueOf(request.getPosition()) : doctor.getPosition());
+        doctor.setIsActive(request.getIsActive() != null ? request.getIsActive() : doctor.getIsActive());
         doctor.setUpdateAt(LocalDateTime.now());
-        if (request.getPosition() != null) {
-            doctor.setPosition(Position.valueOf(request.getPosition()));
-        }
-        doctor.setActive(active);
 
         return doctorRepository.save(doctor);
     }
 
     @Override
+    @Transactional
     public void deleteDoctor(Long id) {
-        logger.info("Xóa bác sĩ với ID: {}", id);
-
-        Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bác sĩ");
-                });
-
+        logger.info("Deleting doctor with ID: {}", id);
+        Doctor doctor = getDoctorById(id);
         doctorRepository.delete(doctor);
-        logger.info("Đã xóa bác sĩ với ID: {}", id);
     }
 
     @Override
-    public Doctor getDoctorById(Long id) {
-        logger.info("Lấy bác sĩ với ID: {}", id);
-
-        return doctorRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bác sĩ");
-                });
-    }
-
-    @Override
-    public Doctor getDoctorBySlug(String slug) {
-        logger.info("Lấy bác sĩ với slug: {}", slug);
-
-        return doctorRepository.findBySlug(slug)
-                .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bác sĩ với slug: {}", slug);
-                    return new RuntimeException("Không tìm thấy bác sĩ");
-                });
-    }
-
-    @Override
+    @Transactional
     public void hideDoctor(Long id) {
-        logger.info("Ẩn bác sĩ với ID: {}", id);
-        Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Không tìm thấy bác sĩ với ID: {}", id);
-                    return new RuntimeException("Không tìm thấy bác sĩ");
-                });
-
-        doctor.setActive(!doctor.isActive());
+        logger.info("Toggling active status for doctor with ID: {}", id);
+        Doctor doctor = getDoctorById(id);
+        doctor.setIsActive(!doctor.getIsActive());
         doctor.setUpdateAt(LocalDateTime.now());
         doctorRepository.save(doctor);
-        logger.info("Đã ẩn bác sĩ với ID: {}", id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<String> getAllPositions() {
-        logger.info("Lấy tất cả vị trí của bác sĩ");
+        logger.info("Fetching all doctor positions");
         return List.of(Position.values()).stream()
                 .map(Position::name)
                 .toList();

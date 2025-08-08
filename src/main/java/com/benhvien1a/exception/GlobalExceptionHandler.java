@@ -1,6 +1,6 @@
 package com.benhvien1a.exception;
 
-import com.benhvien1a.dto.response.ApiResponse;
+import com.benhvien1a.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

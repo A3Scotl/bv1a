@@ -48,27 +48,27 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // PUBLIC: Các endpoint không cần đăng nhập
-                        .requestMatchers("/api/v1/doctors/public","/api/v1/appointments","/api/v1/auth/login", "/api/v1/auth/forgot-password").permitAll()
-                        .requestMatchers( "/api/v1/articles/public").permitAll()
+                        .requestMatchers(
+                                "/api/v1/doctors/public",
+                                "/api/v1/appointments",
+                                "/api/v1/auth/login"
+                              ).permitAll()
+                        .requestMatchers( "/api/v1/posts/public").permitAll()
                         .requestMatchers( "/api/v1/departments/public").permitAll()
                         .requestMatchers( "/api/v1/doctors/by-slug/**").permitAll()
                         .requestMatchers( "/api/v1/doctors/public/**").permitAll()
                         .requestMatchers( "/api/v1/departments/by-slug/**").permitAll()
-                        .requestMatchers( "/api/v1/articles/by-slug/**").permitAll()
-                        .requestMatchers( "/api/v1/articles/by-type/**").permitAll()
+                        .requestMatchers( "/api/v1/posts/by-slug/**").permitAll()
+                        .requestMatchers( "/api/v1/posts/by-type/**").permitAll()
                         // Tất cả GET công khai
                         .requestMatchers(HttpMethod.POST, "/api/v1/appointments").permitAll() // POST đăng ký lịch khám công khai
                         // EDITOR: Quyền truy cập các endpoint liên quan
-                        .requestMatchers("/api/v1/articles/**", "/api/v1/departments/**", "/api/v1/doctors/**",
-                                "/api/v1/services/**", "/api/v1/menus/**", "/api/v1/service-prices/**",
-                                "/api/v1/categories/**")
-                        .hasAnyRole("EDITOR", "ADMIN")
-                        // AUTH: Giữ nguyên quyền cho các endpoint xác thực
                         .requestMatchers(
-                                "/api/v1/auth/resend-verification",
-                                "/api/v1/auth/reset-password",
-                                "/api/v1/auth/change-password"
-                        ).hasAnyRole("EDITOR", "ADMIN")
+                                "/api/v1/posts/**",
+                                "/api/v1/departments/**",
+                                "/api/v1/doctors/**")
+
+                        .hasAnyRole("EDITOR", "ADMIN")
                         // ADMIN: Toàn quyền cho các endpoint còn lại
                         .requestMatchers("/api/v1/**").hasRole("ADMIN")
                         // Còn lại phải đăng nhập

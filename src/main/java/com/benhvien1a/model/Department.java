@@ -6,29 +6,27 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "departments")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Table(name = "departments", indexes = {
+        @Index(name = "idx_department_slug", columnList = "slug", unique = true),
+        @Index(name = "idx_department_is_active", columnList = "isActive"),
+        @Index(name = "idx_department_name", columnList = "name")
+})
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 100, nullable = false, unique = true)
-    private String slug;
-
-    @Column(length = 100, nullable = false)
     private String name;
-
+    private String slug;
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
-
     private String thumbnail;
-
-    private LocalDateTime createAt = LocalDateTime.now();
+    private Boolean isActive;
+    private LocalDateTime createAt;
     private LocalDateTime updateAt;
 
-    private boolean isActive = true;
 }

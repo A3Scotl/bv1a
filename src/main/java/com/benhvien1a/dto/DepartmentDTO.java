@@ -17,10 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Data
 public class DepartmentDTO {
-    @NotBlank(message = "Tên phòng ban là bắt buộc")
     private String name;
     private String description;
-
     private MultipartFile thumbnail;
     private String slug;
     private Boolean isActive;
