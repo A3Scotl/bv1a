@@ -75,10 +75,7 @@ public class DoctorServiceImpl implements DoctorService {
     @Transactional
     public Doctor createDoctor(DoctorDTO request) {
         logger.info("Creating doctor with name: {}", request.getFullName());
-        String slug = SlugUtils.generateSlug(request.getFullName());
-        if (doctorRepository.existsBySlug(slug)) {
-            throw new RuntimeException("Slug already exists: " + slug);
-        }
+        String slug = SlugUtils.generateUniqueSlug(request.getFullName(), doctorRepository::existsBySlug);
 
         Department department = request.getDepartmentId() != null
                 ? departmentRepository.findById(request.getDepartmentId())
@@ -110,13 +107,9 @@ public class DoctorServiceImpl implements DoctorService {
         logger.info("Updating doctor with ID: {}", id);
         Doctor doctor = getDoctorById(id);
 
-        String newSlug = request.getSlug() != null && !request.getSlug().isBlank() ? request.getSlug()
-                : request.getFullName() != null && !request.getFullName().equals(doctor.getFullName())
-                ? SlugUtils.generateSlug(request.getFullName())
-                : doctor.getSlug();
-
-        if (!doctor.getSlug().equals(newSlug) && doctorRepository.existsBySlug(newSlug)) {
-            throw new RuntimeException("Slug already exists: " + newSlug);
+        String newSlug = doctor.getSlug();
+        if (request.getFullName() != null && !request.getFullName().equals(doctor.getFullName())) {
+            newSlug = SlugUtils.generateUniqueSlug(request.getFullName(), doctorRepository::existsBySlug);
         }
 
         Department department = request.getDepartmentId() != null

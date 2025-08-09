@@ -116,12 +116,9 @@ public class PostServiceImpl implements PostService {
         logger.info("Updating post with ID: {}", id);
         Post post = getPostById(id);
 
-        String newSlug = request.getTitle() != null && !request.getTitle().isBlank()
-                ? SlugUtils.generateSlug(request.getTitle())
-                : post.getSlug();
-
-        if (!post.getSlug().equals(newSlug) && postRepository.existsBySlug(newSlug)) {
-            throw new RuntimeException("Slug already exists: " + newSlug);
+        String newSlug = post.getSlug();
+        if (request.getTitle() != null && !request.getTitle().equals(post.getTitle())) {
+            newSlug = SlugUtils.generateUniqueSlug(request.getTitle(), postRepository::existsBySlug);
         }
 
         String thumbnailUrl = request.getThumbnail() != null && !request.getThumbnail().isEmpty()

@@ -51,7 +51,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/doctors/public",
                                 "/api/v1/appointments",
-                                "/api/v1/auth/login"
+                                "/api/v1/auth/login",
+                                "/api/v1/site-config"
                               ).permitAll()
                         .requestMatchers( "/api/v1/posts/public").permitAll()
                         .requestMatchers( "/api/v1/departments/public").permitAll()
@@ -66,7 +67,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/posts/**",
                                 "/api/v1/departments/**",
-                                "/api/v1/doctors/**")
+                                "/api/v1/doctors/**",
+                        "/api/v1/site-config/**")
 
                         .hasAnyRole("EDITOR", "ADMIN")
                         // ADMIN: Toàn quyền cho các endpoint còn lại

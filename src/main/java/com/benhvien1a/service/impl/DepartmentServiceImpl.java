@@ -63,10 +63,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional
     public Department createDepartment(DepartmentDTO request) {
         logger.info("Creating department with name: {}", request.getName());
-        String slug = SlugUtils.generateSlug(request.getName());
-        if (departmentRepository.existsBySlug(slug)) {
-            throw new RuntimeException("Slug already exists: " + slug);
-        }
+        String slug = SlugUtils.generateUniqueSlug(request.getName(), departmentRepository::existsBySlug);
 
         String thumbnailUrl = request.getThumbnail() != null && !request.getThumbnail().isEmpty()
                 ? cloudinaryService.uploadFile(request.getThumbnail())
@@ -91,12 +88,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         logger.info("Updating department with ID: {}", id);
         Department department = getDepartmentById(id);
 
-        String newSlug = request.getSlug() != null && !request.getSlug().isBlank() ? request.getSlug()
-                : !request.getName().equals(department.getName()) ? SlugUtils.generateSlug(request.getName())
-                : department.getSlug();
-
-        if (!department.getSlug().equals(newSlug) && departmentRepository.existsBySlug(newSlug)) {
-            throw new RuntimeException("Slug already exists: " + newSlug);
+        String newSlug = department.getSlug();
+        if (request.getName() != null && !request.getName().equals(department.getName())) {
+            newSlug = SlugUtils.generateUniqueSlug(request.getName(), departmentRepository::existsBySlug);
         }
 
         String thumbnailUrl = request.getThumbnail() != null && !request.getThumbnail().isEmpty()
