@@ -1,8 +1,8 @@
 package com.benhvien1a.controller;
 
 import com.benhvien1a.dto.DoctorDTO;
+import com.benhvien1a.model.*;
 import com.benhvien1a.response.ApiResponse;
-import com.benhvien1a.model.Doctor;
 import com.benhvien1a.service.DoctorService;
 import com.benhvien1a.util.ApiResponseUtil;
 import jakarta.validation.Valid;
@@ -128,19 +128,16 @@ public class DoctorController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String fullName,
-            @RequestParam(required = false) Boolean isActive) {
-        logger.info("Received request to get all doctors with page: {}, size: {}, fullName: {}, isActive: {}", page, size, fullName, isActive);
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Doctor> doctors = fullName != null || isActive != null
-                    ? doctorService.getFilteredDoctors(fullName, isActive, pageable)
-                    : doctorService.getAllDoctors(pageable);
-            return ApiResponseUtil.buildResponse(true, "All doctors retrieved successfully", doctors, "/api/v1/doctors");
-        } catch (Exception e) {
-            logger.error("Failed to retrieve all doctors: {}", e.getMessage());
-            return ApiResponseUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, "Failed to retrieve all doctors: " + e.getMessage(), e.getMessage(), "/api/v1/doctors");
-        }
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) Long departmentId,
+            @RequestParam(required = false) Position position) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Doctor> doctors = doctorService.getFilteredDoctors(fullName, isActive, departmentId, position, pageable);
+
+        return ApiResponseUtil.buildResponse(true, "All doctors retrieved successfully", doctors, "/api/v1/doctors");
     }
+
 
     @PatchMapping("/{id}/hide")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")

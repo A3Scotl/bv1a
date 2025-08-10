@@ -69,7 +69,7 @@ public class PostServiceImpl implements PostService {
     public Post getPostBySlug(String slug) {
         logger.info("Fetching post with slug: {}", slug);
 
-        Post post = postRepository.findBySlug(slug)
+        Post post = postRepository.findBySlugAndStatus(slug,PostStatus.PUBLIC)
                 .orElseThrow(() -> new RuntimeException("Post not found with slug: " + slug));
 
         // Tăng viewCount
@@ -156,6 +156,7 @@ public class PostServiceImpl implements PostService {
         Post post = getPostById(id);
         post.setStatus(post.getStatus() == PostStatus.PUBLIC ? PostStatus.PRIVATE : PostStatus.PUBLIC);
         post.setUpdateAt(LocalDateTime.now());
+        post.setPublishAt(LocalDateTime.now());
         postRepository.save(post);
     }
 

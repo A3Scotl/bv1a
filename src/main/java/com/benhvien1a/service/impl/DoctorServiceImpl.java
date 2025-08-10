@@ -43,9 +43,12 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Doctor> getFilteredDoctors(String fullName, Boolean isActive, Pageable pageable) {
-        logger.info("Fetching doctors with fullName: {} and isActive: {}", fullName, isActive);
-        return doctorRepository.findByFullNameAndIsActive(fullName, isActive, pageable);
+    public Page<Doctor> getFilteredDoctors(String fullName, Boolean isActive, Long departmentId, Position position, Pageable pageable) {
+        logger.info(
+                "Fetching doctors with fullName: {}, isActive: {}, departmentName: {}, position: {}",
+                fullName, isActive, departmentId, position
+        );
+        return doctorRepository.findByFullNameAndIsActiveAndPositionAndDepartmentId(fullName, isActive, departmentId, position, pageable);
     }
 
     @Override
